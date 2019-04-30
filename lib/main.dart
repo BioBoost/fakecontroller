@@ -481,22 +481,6 @@ class _MyHomePageState extends State<MyHomePage> {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: Scaffold(
-        ///resizeToAvoidBottomPadding: false,
-        ///
-        //
-        /*
-        bottomNavigationBar: BottomNavigationBar(
-          items: <BottomNavigationBarItem>[
-            BottomNavigationBarItem(
-                icon: Icon(Icons.build), title: Text('Add broker')),
-            BottomNavigationBarItem(
-                icon: Icon(Icons.gamepad), title: Text('BUG Controller')),
-          ],
-          currentIndex: _page,
-          fixedColor: Colors.blue,
-          onTap: navigationTapped,
-        ),
-        */
         body: PageView(
           controller: _pageController,
           onPageChanged: onPageChanged,
