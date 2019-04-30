@@ -554,7 +554,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   ? 'Disconnect'
                   : 'Connect'),
           textColor: Colors.white,
-          color: Colors.redAccent,
+          color: (client?.connectionState == mqtt.MqttConnectionState.connected) ? Colors.greenAccent : Colors.redAccent,
           onPressed: () {
             addValuesToMqttClient();
             if (client?.connectionState == mqtt.MqttConnectionState.connected) {
