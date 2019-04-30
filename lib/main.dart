@@ -4,6 +4,7 @@ import 'dart:core';
 import 'package:mqtt_client/mqtt_client.dart' as mqtt;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'mqtt_settings.dart';
 
 void main() => runApp(MyHomePage());
 
@@ -278,12 +279,8 @@ class _MyHomePageState extends State<MyHomePage> {
 
   final brokerAddressController = TextEditingController(text: '0080d0803b102f01');
   final usernameController = TextEditingController(text: 'Tester');
-  //final passwordController = TextEditingController();
 
-  //String broker = 'eu.thethings.network';
-  String broker = "labict.be";
-  String usernameBroker = "";
-  String passwordBroker = "";
+  MqttSettings mqttSettings = MqttSettings();
 
   mqtt.MqttClient client;
   mqtt.MqttConnectionState connectionState;
@@ -300,65 +297,27 @@ class _MyHomePageState extends State<MyHomePage> {
   int _page = 0;
 
   void addValuesToMqttClient() {
-    broker = "labict.be";
     idHardware = brokerAddressController.text;
     username = usernameController.text;
-    //password = passwordController.text;
   }
 
   void _connect() async {
-    /// First create a client, the client is constructed with a broker name, client identifier
-    /// and port if needed. The client identifier (short ClientId) is an identifier of each MQTT
-    /// client connecting to a MQTT broker. As the word identifier already suggests, it should be unique per broker.
-    /// The broker uses it for identifying the client and the current state of the client. If you don’t need a state
-    /// to be hold by the broker, in MQTT 3.1.1 you can set an empty ClientId, which results in a connection without any state.
-    /// A condition is that clean session connect flag is true, otherwise the connection will be rejected.
-    /// The client identifier can be a maximum length of 23 characters. If a port is not specified the standard port
-    /// of 1883 is used.
-    /// If you want to use websockets rather than TCP see below.
-
-    client = mqtt.MqttClient(broker, '');
-
-    //Try for password but not found it but in mqtt_client.dart can you work a round a give there your pass and username.
-    //mqtt.connectionMessage.authenticateAs(username, password);
-    //mqtt.connect([String username, String password]);
-
-    /// A websocket URL must start with ws:// or wss:// or Dart will throw an exception, consult your websocket MQTT broker
-    /// for details.
-    /// To use websockets add the following lines -:
-    // client.useWebSocket = true;
-
-    /// This flag causes the mqtt client to use an alternate method to perform the WebSocket handshake. This is needed for certain
-    /// matt clients (Particularly Amazon Web Services IOT) that will not tolerate additional message headers in their get request
-    // client.useAlternateWebSocketImplementation = true;
-    // client.port = 443; // ( or whatever your WS port is)
-    /// Note do not set the secure flag if you are using wss, the secure flags is for TCP sockets only.
-
-    /// Set logging on if needed, defaults to off
+    client = mqtt.MqttClient(mqttSettings.getBrokerUrl(), '');
+    client.useWebSocket = mqttSettings.useWebSockets;
+    client.port = mqttSettings.port;
     client.logging(on: true);
 
-    /// If you intend to use a keep alive value in your connect message that is not the default(60s)
-    /// you must set it here
     client.keepAlivePeriod = 30;
 
     /// Add the unsolicited disconnection callback
     client.onDisconnected = _onDisconnected;
 
-    /// Create a connection message to use or use the default one. The default one sets the
-    /// client identifier, any supplied username/password, the default keepalive interval(60s)
-    /// and clean session, an example of a specific one below.
     final mqtt.MqttConnectMessage connMess = mqtt.MqttConnectMessage()
-        .withClientIdentifier('Mqtt_MyClientUniqueId2')
-        .authenticateAs(
-            usernameBroker, passwordBroker) // important to connect to broker!!
-
+        .withClientIdentifier(mqttSettings.clientId)
         // Must agree with the keep alive set above or not set
         .startClean() // Non persistent session for testing
-        .keepAliveFor(30)
-        // If you set this you must set a will message
-        .withWillTopic('willtopic')
-        .withWillMessage('My Will message')
-        .withWillQos(mqtt.MqttQos.atLeastOnce);
+        .keepAliveFor(30);
+    
     print('MQTT client connecting....');
     client.connectionMessage = connMess;
 
