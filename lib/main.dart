@@ -517,7 +517,7 @@ class _MyHomePageState extends State<MyHomePage> {
         Container(
           padding: EdgeInsets.only(top: 30),
           child: ListTile(
-            leading: const Icon(Icons.location_city),
+            leading: const Icon(Icons.videogame_asset),
             title: TextField(
               controller: brokerAddressController,
               decoration: InputDecoration(
@@ -527,7 +527,7 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
         ),
         ListTile(
-          leading: const Icon(Icons.more_horiz),
+          leading: const Icon(Icons.face),
           title: TextField(
             controller: usernameController,
             decoration: InputDecoration(
