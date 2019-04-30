@@ -533,21 +533,8 @@ class _MyHomePageState extends State<MyHomePage> {
             decoration: InputDecoration(
               hintText: "username",
             ),
-            //keyboardType: TextInputType.number,
           ),
         ),
-        /*
-        ListTile(
-          leading: const Icon(Icons.more_vert),
-          title: TextField(
-            controller: passwordController,
-            decoration: InputDecoration(
-              hintText: "password",
-            ),
-            //keyboardType: TextInputType.number,
-          ),
-        ),
-        */
         RaisedButton(
           child: Text(
               client?.connectionState == mqtt.MqttConnectionState.connected
