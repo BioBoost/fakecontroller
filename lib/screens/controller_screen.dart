@@ -23,7 +23,6 @@ class _MyHomePageState extends State<MyHomePage> {
   String displayedStringOld = "";
   static const String pubTopic = 'ttn';
   static const String pubHardwareTopic = 'hardware';
-  IconData connectionStateIcon;
 
   Timer timer;
 
@@ -300,11 +299,6 @@ class _MyHomePageState extends State<MyHomePage> {
       DeviceOrientation.landscapeLeft,
       DeviceOrientation.landscapeRight,
     ]);
-    if (_client != null && _client.isConnected()) {
-      connectionStateIcon = Icons.cloud_done;
-    } else {
-      connectionStateIcon = Icons.cloud_off;
-    }
 
     return MaterialApp(
       debugShowCheckedModeBanner: false,
