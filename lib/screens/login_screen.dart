@@ -1,6 +1,7 @@
 import 'dart:core';
 import 'package:flutter/material.dart';
 import '../bug/user.dart';
+import '../settings/user_settings_storage.dart';
 
 class LoginScreen extends StatefulWidget {
   @override
@@ -67,8 +68,12 @@ class _LoginScreenState extends State<LoginScreen> {
                   onPressed: () {
                     if (userNameController.text?.isNotEmpty
                       && userIdController.text?.isNotEmpty) {
+                        print("Saving user and logging in ...");
                         User user = new User(userIdController.text, userNameController.text);
-                        print("Logging in ...");
+                        UserSettingsStorage.save(user)
+                        .catchError((onError) {
+                          print("Failed to save User.");
+                        });
                         Navigator.pushNamed(context, '/');
                     } else {
                       key.currentState.showSnackBar(new SnackBar(
