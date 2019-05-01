@@ -1,7 +1,6 @@
 import 'dart:core';
 import 'package:flutter/material.dart';
 import 'package:splashscreen/splashscreen.dart';
-import '../settings/user_settings_storage.dart';
 
 class LoadingScreen extends StatefulWidget {
   @override
