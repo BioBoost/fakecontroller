@@ -104,7 +104,10 @@ class _LoginScreenState extends State<LoginScreen> {
                         // Create MQTT Client
                         MqttSimpleClientBuilder.create()
                         .then((client) {
-                          Navigator.pushNamed(context, '/', arguments: client);
+                          Navigator.pushNamed(context, '/', arguments: {
+                            client: client,
+                            user: user
+                          });
                         })
                         .catchError((onError) {
                           print("Failed to connect to MQTT");
