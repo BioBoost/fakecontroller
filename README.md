@@ -31,3 +31,17 @@ flutter build apk
 ```
 
 Your apk can be found at `\build\app\outputs\apk\release`
+
+## Development Tips
+
+### Visual Debugging Grid
+
+Add this to your main:
+
+```dart
+import 'package:flutter/rendering.dart';
+
+void main()
+  debugPaintSizeEnabled=true;
+  // ...
+```
