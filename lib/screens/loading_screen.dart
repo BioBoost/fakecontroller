@@ -10,19 +10,6 @@ class LoadingScreen extends StatefulWidget {
 
 class LoadingScreenState extends State<LoadingScreen> {
   @override
-  void initState() {
-    // Load User settings
-    UserSettingsStorage.load()
-    .then((user) {
-      print("User: " + user.toString());
-    })
-    .catchError((onError) {
-      print("Failed to load User.");
-    });
-    super.initState();
-  }
-
-  @override
   Widget build(BuildContext context) {
     return new SplashScreen(
       seconds: 6,

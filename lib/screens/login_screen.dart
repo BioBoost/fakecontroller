@@ -14,8 +14,29 @@ class _LoginScreenState extends State<LoginScreen> {
 
   final key = new GlobalKey<ScaffoldState>();   // Required for Toast (Snackbar Messages)
 
+  User _user = new User("", "");
+
+  @override
+  void initState() {
+    // Load User settings
+    UserSettingsStorage.load()
+    .then((user) {
+      print("User: " + user.toString());
+      setState(() {
+        _user = user;
+      });
+    })
+    .catchError((onError) {
+      print("Failed to load User.");
+    });
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
+    userIdController.text = _user.getId();
+    userNameController.text = _user.getName();
+
     return Scaffold(
       key: key,
       body: SingleChildScrollView(
