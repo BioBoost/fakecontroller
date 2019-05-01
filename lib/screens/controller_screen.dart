@@ -1,9 +1,9 @@
 import 'dart:async';
 import 'dart:core';
-import 'package:mqtt_client/mqtt_client.dart' as mqtt;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../mqtt_settings.dart';
+import '../bug/simple_mqtt_client.dart';
 
 class MyHomePage extends StatefulWidget {
   @override
@@ -52,7 +52,7 @@ class _MyHomePageState extends State<MyHomePage> {
   bool startApp = true;
 
   void createJsonSendMqttButton() {
-    if (client?.connectionState == mqtt.MqttConnectionState.connected) {
+    if (client != null && client.isConnected()) {
       displayedString = '{"movement":"' +
           movement +
           '","action":"' +
@@ -62,12 +62,7 @@ class _MyHomePageState extends State<MyHomePage> {
           '"}';
       if (displayedString != displayedStringOld) {
         displayedStringOld = displayedString;
-
-        final mqtt.MqttClientPayloadBuilder builder =
-            mqtt.MqttClientPayloadBuilder();
-        builder.addString(displayedString);
-        client.publishMessage(
-            pubTopic, mqtt.MqttQos.exactlyOnce, builder.payload);
+        client?.publish(pubTopic, displayedString);
       }
       if (startApp) {
         startApp = false;
@@ -194,7 +189,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void createJsonSendMqttStart() {
-    if (client?.connectionState == mqtt.MqttConnectionState.connected) {
+    if (client != null && client.isConnected()) {
       displayedString2 = '{"id":"' +
           idHardware +
           '","add_1":"' +
@@ -206,12 +201,7 @@ class _MyHomePageState extends State<MyHomePage> {
           '","dev_id":"' +
           username +
           '"}';
-
-      final mqtt.MqttClientPayloadBuilder builder =
-          mqtt.MqttClientPayloadBuilder();
-      builder.addString(displayedString2);
-      client.publishMessage(
-          pubHardwareTopic, mqtt.MqttQos.exactlyOnce, builder.payload);
+      client?.publish(pubHardwareTopic, displayedString2);
     }
   }
 
@@ -279,17 +269,9 @@ class _MyHomePageState extends State<MyHomePage> {
   final usernameController = TextEditingController(text: 'Tester');
 
   MqttSettings mqttSettings = MqttSettings();
-
-  mqtt.MqttClient client;
-  mqtt.MqttConnectionState connectionState;
-  Set<String> topics = Set<String>();
-  StreamSubscription subscription;
+  SimpleMqttClient client = null;
 
   String messageFromMqtt = '{}';
-  //Map jsonMap = JSON.decode(messageFromMqtt);
-  //Map<String, dynamic> user = jsonDecode(messageFromMqtt);
-  //dynamic convert(String input) => _parseJson(input, _reviver);
-
   Map<String, dynamic> jsonMQTT;
 
   int _page = 0;
@@ -299,115 +281,6 @@ class _MyHomePageState extends State<MyHomePage> {
     username = usernameController.text;
   }
 
-  void _connect() async {
-    client = mqtt.MqttClient(mqttSettings.getBrokerUrl(), '');
-    client.useWebSocket = mqttSettings.useWebSockets;
-    client.port = mqttSettings.port;
-    client.logging(on: true);
-
-    client.keepAlivePeriod = 30;
-
-    /// Add the unsolicited disconnection callback
-    client.onDisconnected = _onDisconnected;
-
-    final mqtt.MqttConnectMessage connMess = mqtt.MqttConnectMessage()
-        .withClientIdentifier(mqttSettings.clientId)
-        // Must agree with the keep alive set above or not set
-        .startClean() // Non persistent session for testing
-        .keepAliveFor(30);
-    
-    print('MQTT client connecting....');
-    client.connectionMessage = connMess;
-
-    /// Connect the client, any errors here are communicated by raising of the appropriate exception. Note
-    /// in some circumstances the broker will just disconnect us, see the spec about this, we however will
-    /// never send malformed messages.
-    try {
-      await client.connect();
-    } catch (e) {
-      print(e);
-      _disconnect();
-    }
-
-    /// Check if we are connected
-    if (client.connectionState == mqtt.MqttConnectionState.connected) {
-      print('MQTT client connected');
-      setState(() {
-        connectionState = client.connectionState;
-      });
-    } else {
-      print('ERROR: MQTT client connection failed - '
-          'disconnecting, state is ${client.connectionState}');
-      _disconnect();
-    }
-
-    /// The client has a change notifier object(see the Observable class) which we then listen to to get
-    /// notifications of published updates to each subscribed topic.
-    subscription = client.updates.listen(_onMessage);
-
-    _subscribeToTopic("fakecontrollerout/");
-  }
-
-  void _disconnect() {
-    client.disconnect();
-    _onDisconnected();
-  }
-
-  void _onDisconnected() {
-    setState(() {
-      topics.clear();
-      connectionState = client.connectionState;
-      client = null;
-      subscription.cancel();
-      subscription = null;
-    });
-    print('MQTT client disconnected');
-  }
-
-  void _onMessage(List<mqtt.MqttReceivedMessage> event) {
-    print(event.length);
-    final mqtt.MqttPublishMessage recMess =
-        event[0].payload as mqtt.MqttPublishMessage;
-    final String message =
-        mqtt.MqttPublishPayload.bytesToStringAsString(recMess.payload.message);
-
-    setState(() {
-      this.messageFromMqtt = message;
-
-      //jsonMQTT = jsonDecode(messageFromMqtt);
-      setState(() {
-        /*
-        fakecontrollerGettingInformation = jsonMQTT["example"]['example2'][0]["example3"];
-
-        */
-      });
-    });
-
-    /// The above may seem a little convoluted for users only interested in the
-    /// payload, some users however may be interested in the received publish message,
-    /// lets not constrain ourselves yet until the package has been in the wild
-    /// for a while.
-    /// The payload is a byte buffer, this will be specific to the topic
-    print('MQTT message: topic is <${event[0].topic}>, '
-        'payload is <-- ${message} -->');
-    setState(() {});
-  }
-
-  void _subscribeToTopic(String topic) {
-    if (connectionState == mqtt.MqttConnectionState.connected) {
-      client.subscribe(topic, mqtt.MqttQos.exactlyOnce);
-      setState(() {});
-    }
-  }
-
-  void _unsubscribeFromTopic(String topic) {
-    if (connectionState == mqtt.MqttConnectionState.connected) {
-      setState(() {
-        client.unsubscribe(topic);
-      });
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     SystemChrome.setPreferredOrientations([
@@ -415,24 +288,10 @@ class _MyHomePageState extends State<MyHomePage> {
       DeviceOrientation.landscapeRight,
     ]);
     IconData connectionStateIcon;
-    switch (client?.connectionState) {
-      case mqtt.MqttConnectionState.connected:
-        connectionStateIcon = Icons.cloud_done;
-        break;
-      case mqtt.MqttConnectionState.disconnected:
-        connectionStateIcon = Icons.cloud_off;
-        break;
-      case mqtt.MqttConnectionState.connecting:
-        connectionStateIcon = Icons.cloud_upload;
-        break;
-      case mqtt.MqttConnectionState.disconnecting:
-        connectionStateIcon = Icons.cloud_download;
-        break;
-      case mqtt.MqttConnectionState.faulted:
-        connectionStateIcon = Icons.error;
-        break;
-      default:
-        connectionStateIcon = Icons.cloud_off;
+    if (client != null && client.isConnected()) {
+      connectionStateIcon = Icons.cloud_done;
+    } else {
+      connectionStateIcon = Icons.cloud_off;
     }
 
     return MaterialApp(
@@ -478,18 +337,18 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
         RaisedButton(
           child: Text(
-              client?.connectionState == mqtt.MqttConnectionState.connected
+              (client != null && client.isConnected())
                   ? 'Disconnect'
                   : 'Connect'),
           textColor: Colors.white,
-          color: (client?.connectionState == mqtt.MqttConnectionState.connected) ? Colors.greenAccent : Colors.redAccent,
+          color: (client != null && client.isConnected()) ? Colors.greenAccent : Colors.redAccent,
           onPressed: () {
             addValuesToMqttClient();
-            if (client?.connectionState == mqtt.MqttConnectionState.connected) {
+            if (client != null && client.isConnected()) {
               startApp = true;
-              _disconnect();
+              client?.disconnect();
             } else {
-              _connect();
+              client = new SimpleMqttClient(mqttSettings);
             }
           },
         ),
