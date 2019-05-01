@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:core';
 import 'package:bug_mobile_controller/bug/simple_mqtt_client.dart';
+import 'package:bug_mobile_controller/bug/user.dart';
 import 'package:bug_mobile_controller/mqtt_settings.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -12,6 +13,7 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   SimpleMqttClient _client;
+  User _user = new User("hugerthtreuiheqehqweq", "NDW");
 
   PageController _pageController;
   int groupValue;
@@ -30,9 +32,6 @@ class _MyHomePageState extends State<MyHomePage> {
   void dispose() {
     // Clean up the controller when the Widget is disposed
     timer?.cancel();
-    brokerAddressController.dispose();
-    usernameController.dispose();
-    //passwordController.dispose();
     super.dispose();
   }
 
@@ -40,7 +39,6 @@ class _MyHomePageState extends State<MyHomePage> {
   final String actionIdle = "idle";
   String movement = "idle";
   final String movementIdle = "idle";
-  String username = "gio_anil";
 
   bool leftButtonState = false;
   bool rightButtonState = false;
@@ -75,7 +73,7 @@ class _MyHomePageState extends State<MyHomePage> {
           '","action":"' +
           action +
           '","dev_id":"' +
-          username +
+          _user.getName() +
           '"}';
       if (displayedString != displayedStringOld) {
         displayedStringOld = displayedString;
@@ -228,7 +226,7 @@ class _MyHomePageState extends State<MyHomePage> {
           '","add_3":"' +
           add_3 +
           '","dev_id":"' +
-          username +
+          _user.getName() +
           '"}';
 
       _client.publish(pubHardwareTopic, displayedString2);
@@ -295,12 +293,6 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
-  final brokerAddressController =
-      TextEditingController(text: '0080d0803b102f01');
-  final usernameController = TextEditingController(text: 'Tester');
-  //final passwordController = TextEditingController();
-
-
   String messageFromMqtt = '{}';
   //Map jsonMap = JSON.decode(messageFromMqtt);
   //Map<String, dynamic> user = jsonDecode(messageFromMqtt);
@@ -309,12 +301,6 @@ class _MyHomePageState extends State<MyHomePage> {
   Map<String, dynamic> jsonMQTT;
 
   int _page = 0;
-
-  void addValuesToMqttClient() {
-    idHardware = brokerAddressController.text;
-    username = usernameController.text;
-    //password = passwordController.text;
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -352,7 +338,6 @@ class _MyHomePageState extends State<MyHomePage> {
           controller: _pageController,
           onPageChanged: onPageChanged,
           children: <Widget>[
-            _buildAddBrokerPage(),
             _buildFakecontrollerPage(),
           ],
         ),
@@ -360,74 +345,6 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
-  Column _buildAddBrokerPage() {
-    final _formKey = GlobalKey<FormState>();
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: <Widget>[
-        Container(
-          padding: EdgeInsets.only(top: 30),
-          child: ListTile(
-            leading: const Icon(Icons.location_city),
-            title: TextField(
-              controller: brokerAddressController,
-              decoration: InputDecoration(
-                hintText: "id",
-              ),
-            ),
-          ),
-        ),
-        ListTile(
-          leading: const Icon(Icons.more_horiz),
-          title: TextField(
-            controller: usernameController,
-            decoration: InputDecoration(
-              hintText: "username",
-            ),
-            //keyboardType: TextInputType.number,
-          ),
-        ),
-        /*
-        ListTile(
-          leading: const Icon(Icons.more_vert),
-          title: TextField(
-            controller: passwordController,
-            decoration: InputDecoration(
-              hintText: "password",
-            ),
-            //keyboardType: TextInputType.number,
-          ),
-        ),
-        */
-        Row(
-          children: <Widget>[
-            RaisedButton(
-              child: Text(
-                  (_client != null && _client.isConnected())
-                      ? 'Disconnect'
-                      : 'Connect'),
-              textColor: Colors.white,
-              color: Colors.redAccent,
-              onPressed: () {
-                addValuesToMqttClient();
-                if (_client != null && _client.isConnected()) {
-                  startApp = true;
-                  _client?.disconnect();
-                } else {
-                  _client = new SimpleMqttClient(new MqttSettings());
-                }
-              },
-            ), SizedBox(
-              width: 8.0,
-            ),
-            Icon(connectionStateIcon),
-            SizedBox(height: 8.0),
-            SizedBox(width: 8.0),
-          ],
-        ),
-      ],
-    );
-  }
 
   Container _buildFakecontrollerPage() {
     return Container(
