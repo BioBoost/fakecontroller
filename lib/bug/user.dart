@@ -14,4 +14,9 @@ class User {
   String getName() {
     return _name;
   }
+
+  @override
+  String toString() {
+    return _name + " with id = " + _id;
+  }
 }
