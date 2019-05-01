@@ -1,13 +1,12 @@
 import 'dart:async';
 import 'dart:core';
-import 'package:bug_mobile_controller/bug/mqtt_builder.dart';
-import 'package:bug_mobile_controller/bug/simple_mqtt_client.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:mqtt_client/mqtt_client.dart' as mqtt;
 
 class MyHomePage extends StatefulWidget {
   @override
-  _MyHomePageState createState() => new _MyHomePageState();
+  _MyHomePageState createState() => _MyHomePageState();
 }
 
 class _MyHomePageState extends State<MyHomePage> {
@@ -19,7 +18,8 @@ class _MyHomePageState extends State<MyHomePage> {
   String displayedStringOld = "";
   static const String pubTopic = 'ttn';
   static const String pubHardwareTopic = 'hardware';
-  //builder.addString('Hello from mqtt__client');
+  //builder.addString('Hello from mqtt_client');
+  IconData connectionStateIcon;
 
   Timer timer;
 
@@ -51,8 +51,22 @@ class _MyHomePageState extends State<MyHomePage> {
   bool BButtonState = false;
   bool startApp = true;
 
+  Color leftButtonStateC =  Colors.red;
+  Color rightButtonStateC =  Colors.red;
+  Color upButtonStateC =  Colors.red;
+  Color downButtonStateC = Colors.red;
+  Color selectButtonStateC =  Colors.red;
+  Color startButtonStateC =  Colors.red;
+  Color YButtonStateC =  Colors.red;
+  Color AButtonStateC =  Colors.red;
+  Color XButtonStateC =  Colors.red;
+  Color BButtonStateC = Colors.red;
+
+  //Color selection = Colors.green[400];
+
+
   void createJsonSendMqttButton() {
-    if (_client != null && _client.isConnected()) {
+    if (client?.connectionState == mqtt.MqttConnectionState.connected) {
       displayedString = '{"movement":"' +
           movement +
           '","action":"' +
@@ -62,7 +76,12 @@ class _MyHomePageState extends State<MyHomePage> {
           '"}';
       if (displayedString != displayedStringOld) {
         displayedStringOld = displayedString;
-        _client?.publish(pubTopic, displayedString);
+
+        final mqtt.MqttClientPayloadBuilder builder =
+            mqtt.MqttClientPayloadBuilder();
+        builder.addString(displayedString);
+        client.publishMessage(
+            pubTopic, mqtt.MqttQos.exactlyOnce, builder.payload);
       }
       if (startApp) {
         startApp = false;
@@ -70,7 +89,6 @@ class _MyHomePageState extends State<MyHomePage> {
       }
     }
   }
-
 
   String dropdownAddOnValue1 = "Add on";
   String dropdownAddOnValue2 = "Add on";
@@ -115,7 +133,8 @@ class _MyHomePageState extends State<MyHomePage> {
         break;
       case "adamantium":
         {
-          addOnSelectionToJsonTemp = adamantiumAdd;        }
+          addOnSelectionToJsonTemp = adamantiumAdd;
+        }
         break;
       case "gravyShield":
         {
@@ -154,7 +173,7 @@ class _MyHomePageState extends State<MyHomePage> {
         break;
       case "empBomb":
         {
-          addOnSelectionToJsonTemp =empBombAdd ;
+          addOnSelectionToJsonTemp = empBombAdd;
         }
         break;
       case "ram":
@@ -173,23 +192,35 @@ class _MyHomePageState extends State<MyHomePage> {
         }
         break;
     }
-    switch(addOnSelection) {
-      case 1: {add_1 = addOnSelectionToJsonTemp;}
-      break;
+    switch (addOnSelection) {
+      case 1:
+        {
+          add_1 = addOnSelectionToJsonTemp;
+        }
+        break;
 
-      case 2: {add_2 = addOnSelectionToJsonTemp;}
-      break;
+      case 2:
+        {
+          add_2 = addOnSelectionToJsonTemp;
+        }
+        break;
 
-      case 3: {add_3 = addOnSelectionToJsonTemp;}
-      break;
+      case 3:
+        {
+          add_3 = addOnSelectionToJsonTemp;
+        }
+        break;
 
-      default: {add_1 = "invalidchose";}
-      break;
+      default:
+        {
+          add_1 = "invalidchose";
+        }
+        break;
     }
   }
 
   void createJsonSendMqttStart() {
-    if (_client != null && _client.isConnected()) {
+    if (client?.connectionState == mqtt.MqttConnectionState.connected) {
       displayedString2 = '{"id":"' +
           idHardware +
           '","add_1":"' +
@@ -201,83 +232,253 @@ class _MyHomePageState extends State<MyHomePage> {
           '","dev_id":"' +
           username +
           '"}';
-      _client?.publish(pubHardwareTopic, displayedString2);
+
+      final mqtt.MqttClientPayloadBuilder builder =
+          mqtt.MqttClientPayloadBuilder();
+      builder.addString(displayedString2);
+      client.publishMessage(
+          pubHardwareTopic, mqtt.MqttQos.exactlyOnce, builder.payload);
     }
   }
 
-  void onPressedLeft(_) {
+  void onPressedLeft() {
     setState(() {
       movement = "left";
     });
   }
 
-  void onPressedUp(_) {
+  void onPressedUp() {
     setState(() {
       movement = "forward";
     });
   }
 
-  void onPressedDown(_) {
+  void onPressedDown() {
     setState(() {
       movement = "backward";
     });
   }
 
-  void onPressedRight(_) {
+  void onPressedRight() {
     setState(() {
       movement = "right";
     });
   }
 
-  void actionSelect(_) {
+  void actionSelect() {
     setState(() {
       action = "Select";
     });
   }
 
-  void actionStart(_) {
+  void actionStart() {
     setState(() {
       action = "start";
     });
   }
 
-  void actionY(_) {
+  void actionY() {
     setState(() {
       action = "Y";
     });
   }
 
-  void actionX(_) {
+  void actionX() {
     setState(() {
       action = "X";
     });
   }
 
-  void actionB(_) {
+  void actionB() {
     setState(() {
       action = "B";
     });
   }
 
-  void ActionA(_) {
+  void ActionA() {
     setState(() {
       action = "A";
     });
   }
 
-  final brokerAddressController = TextEditingController(text: '0080d0803b102f01');
+  final brokerAddressController =
+      TextEditingController(text: '0080d0803b102f01');
   final usernameController = TextEditingController(text: 'Tester');
+  //final passwordController = TextEditingController();
 
-  SimpleMqttClient _client = null;
+  //String broker = 'eu.thethings.network';
+  String broker;
+  String usernameBroker = "";
+  String passwordBroker = "";
+
+  mqtt.MqttClient client;
+  mqtt.MqttConnectionState connectionState;
+  Set<String> topics = Set<String>();
+  StreamSubscription subscription;
 
   String messageFromMqtt = '{}';
+  //Map jsonMap = JSON.decode(messageFromMqtt);
+  //Map<String, dynamic> user = jsonDecode(messageFromMqtt);
+  //dynamic convert(String input) => _parseJson(input, _reviver);
+
   Map<String, dynamic> jsonMQTT;
 
   int _page = 0;
 
-  void addValuesToMqtt_client() {
+  void addValuesToMqttClient() {
+    broker = "wss://api.bug.labict.be/broker";
     idHardware = brokerAddressController.text;
     username = usernameController.text;
+    //password = passwordController.text;
+  }
+
+  void _connect() async {
+    /// First create a client, the client is constructed with a broker name, client identifier
+    /// and port if needed. The client identifier (short ClientId) is an identifier of each MQTT
+    /// client connecting to a MQTT broker. As the word identifier already suggests, it should be unique per broker.
+    /// The broker uses it for identifying the client and the current state of the client. If you don’t need a state
+    /// to be hold by the broker, in MQTT 3.1.1 you can set an empty ClientId, which results in a connection without any state.
+    /// A condition is that clean session connect flag is true, otherwise the connection will be rejected.
+    /// The client identifier can be a maximum length of 23 characters. If a port is not specified the standard port
+    /// of 1883 is used.
+    /// If you want to use websockets rather than TCP see below.
+
+    client = mqtt.MqttClient(broker, '');
+
+    //Try for password but not found it but in mqtt_client.dart can you work a round a give there your pass and username.
+    //mqtt.connectionMessage.authenticateAs(username, password);
+    //mqtt.connect([String username, String password]);
+    //found solution:
+    //.authenticateAs(
+     //   usernameBroker, passwordBroker) // important to connect to broker!!
+
+    /// A websocket URL must start with ws:// or wss:// or Dart will throw an exception, consult your websocket MQTT broker
+    /// for details.
+    /// To use websockets add the following lines -:
+    client.useWebSocket = true;
+      //client.useAlternateWebSocketImplementation = true;
+    /// This flag causes the mqtt client to use an alternate method to perform the WebSocket handshake. This is needed for certain
+    /// matt clients (Particularly Amazon Web Services IOT) that will not tolerate additional message headers in their get request
+    // client.useAlternateWebSocketImplementation = true;
+     client.port = 443; // ( or whatever your WS port is) // important!!
+
+    /// Note do not set the secure flag if you are using wss, the secure flags is for TCP sockets only.
+
+    /// Set logging on if needed, defaults to off
+    client.logging(on: true);
+
+    /// If you intend to use a keep alive value in your connect message that is not the default(60s)
+    /// you must set it here
+    client.keepAlivePeriod = 30;
+
+    /// Add the unsolicited disconnection callback
+    client.onDisconnected = _onDisconnected;
+
+    /// Create a connection message to use or use the default one. The default one sets the
+    /// client identifier, any supplied username/password, the default keepalive interval(60s)
+    /// and clean session, an example of a specific one below.
+    final mqtt.MqttConnectMessage connMess = mqtt.MqttConnectMessage()
+        .withClientIdentifier('Mqtt_MyClientUniqueId2')
+        .authenticateAs(
+            usernameBroker, passwordBroker) // important to connect to broker!!
+
+        // Must agree with the keep alive set above or not set
+        .startClean() // Non persistent session for testing
+        .keepAliveFor(30);
+        // If you set this you must set a will message
+        //.withWillTopic('willtopic')
+        //.withWillMessage('My Will message')
+        //.withWillQos(mqtt.MqttQos.atLeastOnce);
+    print('MQTT client connecting....');
+    client.connectionMessage = connMess;
+
+    /// Connect the client, any errors here are communicated by raising of the appropriate exception. Note
+    /// in some circumstances the broker will just disconnect us, see the spec about this, we however will
+    /// never send malformed messages.
+    try {
+      await client.connect();
+    } catch (e) {
+      print(e);
+      _disconnect();
+    }
+
+    /// Check if we are connected
+    if (client.connectionState == mqtt.MqttConnectionState.connected) {
+      print('MQTT client connected');
+      setState(() {
+        connectionState = client.connectionState;
+      });
+    } else {
+      print('ERROR: MQTT client connection failed - '
+          'disconnecting, state is ${client.connectionState}');
+      _disconnect();
+    }
+
+    /// The client has a change notifier object(see the Observable class) which we then listen to to get
+    /// notifications of published updates to each subscribed topic.
+    subscription = client.updates.listen(_onMessage);
+
+    _subscribeToTopic("fakecontrollerout/");
+  }
+
+  void _disconnect() {
+    client.disconnect();
+    _onDisconnected();
+  }
+
+  void _onDisconnected() {
+    setState(() {
+      topics.clear();
+      connectionState = client.connectionState;
+      client = null;
+      subscription.cancel();
+      subscription = null;
+    });
+    print('MQTT client disconnected');
+  }
+
+  void _onMessage(List<mqtt.MqttReceivedMessage> event) {
+    print(event.length);
+    final mqtt.MqttPublishMessage recMess =
+        event[0].payload as mqtt.MqttPublishMessage;
+    final String message =
+        mqtt.MqttPublishPayload.bytesToStringAsString(recMess.payload.message);
+
+    setState(() {
+      this.messageFromMqtt = message;
+
+      //jsonMQTT = jsonDecode(messageFromMqtt);
+      setState(() {
+        /*
+        fakecontrollerGettingInformation = jsonMQTT["example"]['example2'][0]["example3"];
+
+        */
+      });
+    });
+
+    /// The above may seem a little convoluted for users only interested in the
+    /// payload, some users however may be interested in the received publish message,
+    /// lets not constrain ourselves yet until the package has been in the wild
+    /// for a while.
+    /// The payload is a byte buffer, this will be specific to the topic
+    print('MQTT message: topic is <${event[0].topic}>, '
+        'payload is <-- ${message} -->');
+    setState(() {});
+  }
+
+  void _subscribeToTopic(String topic) {
+    if (connectionState == mqtt.MqttConnectionState.connected) {
+      client.subscribe(topic, mqtt.MqttQos.exactlyOnce);
+      setState(() {});
+    }
+  }
+
+  void _unsubscribeFromTopic(String topic) {
+    if (connectionState == mqtt.MqttConnectionState.connected) {
+      setState(() {
+        client.unsubscribe(topic);
+      });
+    }
   }
 
   @override
@@ -286,16 +487,46 @@ class _MyHomePageState extends State<MyHomePage> {
       DeviceOrientation.landscapeLeft,
       DeviceOrientation.landscapeRight,
     ]);
-    IconData connectionStateIcon;
-    if (_client != null && _client.isConnected()) {
-      connectionStateIcon = Icons.cloud_done;
-    } else {
-      connectionStateIcon = Icons.cloud_off;
+    switch (client?.connectionState) {
+      case mqtt.MqttConnectionState.connected:
+        connectionStateIcon = Icons.cloud_done;
+        break;
+      case mqtt.MqttConnectionState.disconnected:
+        connectionStateIcon = Icons.cloud_off;
+        break;
+      case mqtt.MqttConnectionState.connecting:
+        connectionStateIcon = Icons.cloud_upload;
+        break;
+      case mqtt.MqttConnectionState.disconnecting:
+        connectionStateIcon = Icons.cloud_download;
+        break;
+      case mqtt.MqttConnectionState.faulted:
+        connectionStateIcon = Icons.error;
+        break;
+      default:
+        connectionStateIcon = Icons.cloud_off;
     }
 
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: Scaffold(
+
+        ///resizeToAvoidBottomPadding: false,
+        ///
+        //
+        /*
+        bottomNavigationBar: BottomNavigationBar(
+          items: <BottomNavigationBarItem>[
+            BottomNavigationBarItem(
+                icon: Icon(Icons.build), title: Text('Add broker')),
+            BottomNavigationBarItem(
+                icon: Icon(Icons.gamepad), title: Text('BUG Controller')),
+          ],
+          currentIndex: _page,
+          fixedColor: Colors.blue,
+          onTap: navigationTapped,
+        ),
+        */
         body: PageView(
           controller: _pageController,
           onPageChanged: onPageChanged,
@@ -316,7 +547,7 @@ class _MyHomePageState extends State<MyHomePage> {
         Container(
           padding: EdgeInsets.only(top: 30),
           child: ListTile(
-            leading: const Icon(Icons.videogame_asset),
+            leading: const Icon(Icons.location_city),
             title: TextField(
               controller: brokerAddressController,
               decoration: InputDecoration(
@@ -326,32 +557,53 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
         ),
         ListTile(
-          leading: const Icon(Icons.face),
+          leading: const Icon(Icons.more_horiz),
           title: TextField(
             controller: usernameController,
             decoration: InputDecoration(
               hintText: "username",
             ),
+            //keyboardType: TextInputType.number,
           ),
         ),
-        RaisedButton(
-          child: Text(
-              (_client != null && _client.isConnected())
-                  ? 'Disconnect'
-                  : 'Connect'),
-          textColor: Colors.white,
-          color: (_client != null && _client.isConnected()) ? Colors.greenAccent : Colors.redAccent,
-          onPressed: () {
-            addValuesToMqtt_client();
-            if (_client != null && _client.isConnected()) {
-              startApp = true;
-              _client?.disconnect();
-            } else {
-              MqttSimpleClientBuilder.create().then((client) {
-                _client = client;
-              });
-            }
-          },
+        /*
+        ListTile(
+          leading: const Icon(Icons.more_vert),
+          title: TextField(
+            controller: passwordController,
+            decoration: InputDecoration(
+              hintText: "password",
+            ),
+            //keyboardType: TextInputType.number,
+          ),
+        ),
+        */
+        Row(
+          children: <Widget>[
+            RaisedButton(
+              child: Text(
+                  client?.connectionState == mqtt.MqttConnectionState.connected
+                      ? 'Disconnect'
+                      : 'Connect'),
+              textColor: Colors.white,
+              color: Colors.redAccent,
+              onPressed: () {
+                addValuesToMqttClient();
+                if (client?.connectionState ==
+                    mqtt.MqttConnectionState.connected) {
+                  startApp = true;
+                  _disconnect();
+                } else {
+                  _connect();
+                }
+              },
+            ), SizedBox(
+              width: 8.0,
+            ),
+            Icon(connectionStateIcon),
+            SizedBox(height: 8.0),
+            SizedBox(width: 8.0),
+          ],
         ),
       ],
     );
@@ -364,34 +616,36 @@ class _MyHomePageState extends State<MyHomePage> {
           Container(
             decoration: BoxDecoration(
               image: DecorationImage(
-                image: ExactAssetImage('assets/image/bug-logo-z.png'),
-                fit: BoxFit.fitWidth,
-                  alignment: Alignment.bottomCenter
-
-              ),
+                  image: ExactAssetImage('assets/image/bug-logo-z.png'),
+                  fit: BoxFit.fitWidth,
+                  alignment: Alignment.bottomLeft),
             ),
           ),
-          Center(
-            child: SingleChildScrollView(
-              child: Row(
-                children: <Widget>[
-                  //1e colom
-                  Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      addOnController1(1, 20, 0, 5, 150),
-                      buttonControllerMove(
-                          Icons.arrow_left, onPressedLeft,85, 0, 0, 130),
-                    ],
-                  ),
-                  //2e colom
-                  Column(
-                    //crossAxisAlignment: CrossAxisAlignment.stretch,
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      /*
+         //SingleChildScrollView(
+             Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: <Widget>[
+                //1e colom
+                Column(
+                  //mainAxisSize: MainAxisSize.min,
+                  //crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: <Widget>[
+                    addOnController1(1, 0, 0, 0, 90),
+                    buttonControllerMove(
+                      //left: left, right: right, top: top, bottom: bottom
+                        Icons.arrow_left, onPressedLeft,leftButtonStateC, 75, 0, 0, 140),
+                  ],
+                ),
+                //2e colom
+                Column(
+                  //crossAxisAlignment: CrossAxisAlignment.stretch,
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    /*
                       Flexible(
                         flex: 1,
                         child: Container(
@@ -424,135 +678,114 @@ class _MyHomePageState extends State<MyHomePage> {
                         ),
                       ),
                       */
-                      buttonControllerMove(
-                          Icons.arrow_drop_up, onPressedUp, 0, 0, 130, 60),
-                      buttonControllerMove(
-                          Icons.arrow_drop_down, onPressedDown, 0, 0, 0, 70),
-                    ],
-                  ),
-                  //3e colom
-                  Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: <Widget>[
-                      buttonControllerMove(
-                          Icons.arrow_right, onPressedRight, 0, 0, 70, 0),
-                    ],
-                  ),
+                    buttonControllerMove(
+                        Icons.arrow_drop_up, onPressedUp,upButtonStateC, 0, 0, 0, 50),
+                    buttonControllerMove(
+                        Icons.arrow_drop_down, onPressedDown,downButtonStateC, 0, 0, 0, 90),
+                  ],
+                ),
+                //3e colom
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    buttonControllerMove(
+                        Icons.arrow_right, onPressedRight,rightButtonStateC, 0, 0, 0, 140),
+                  ],
+                ),
 
-                  //4e colom
-                  Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      buttonControllerAction(
-                          Icons.adjust, actionSelect, 40, 0, 180, 100),
-                    ],
-                  ),
+                //4e colom
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    buttonControllerAction(
+                        "Select", actionSelect, 40, 0, 0, 100),
+                  ],
+                ),
 
-                  //5e kolom
-                  Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      buttonControllerAction(
-                          Icons.adjust, actionStart, 20, 0, 130, 55),
-                    ],
-                  ),
-                  //6e colom
-                  Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      addOnController2(2, 0, 0, 0, 0),
-                      buttonControllerAction(
-                          Icons.arrow_left, actionY, 50, 0, 150, 125),
-                    ],
-                  ),
-                  //7ecolom
-                  Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      buttonControllerAction(
-                          Icons.arrow_drop_up, actionX, 10, 0, 70, 0),
-                      buttonControllerAction(
-                          Icons.arrow_drop_down, actionB, 10, 0, 60, 0),
-                    ],
-                  ),
+                //5e kolom
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    buttonControllerAction(
+                        "Start", actionStart, 20, 0, 0, 100),
+                  ],
+                ),
+                //6e colom
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    addOnController2(2, 0, 0, 0, 90),
+                    buttonControllerAction(
+                        "Y", actionY, 35, 0, 0, 140),
+                  ],
+                ),
+                //7ecolom
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    buttonControllerAction(
+                        "X", actionX, 0, 0, 0, 60),
+                    buttonControllerAction(
+                        "B", actionB, 0, 0, 0, 85),
+                  ],
+                ),
 //8e colom
-                  Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: <Widget>[
-                      addOnController3(3, 0, 0, 0, 0),
-                      buttonControllerAction(
-                          Icons.arrow_right, ActionA, 0, 20, 150, 125),
-                    ],
-                  ),
-                ],
-              ),
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    addOnController3(3, 0, 0, 0, 90),
+                    buttonControllerAction(
+                        "A", ActionA, 0, 20, 0, 140),
+                  ],
+                ),
+              ],
             ),
-          ),
+          //),
         ],
       ),
     );
   }
 
-  Widget buttonControllerMove(IconData button, method, double left,
+  Widget buttonControllerMove(IconData button, method,Color color , double left,
       double right, double top, double bottom) {
     return Container(
       padding:
-          EdgeInsets.only(left: left, right: right, top: top, bottom: bottom),
-      child: Opacity(
-        opacity: opacityValue,
-        child: GestureDetector(
-          onTapDown: method,
-          onTapUp: (_) {
-            movement = "idle";
-          },
-          // Our Custom Button!
-          child: Container(
-            child: ButtonTheme(
-              minWidth: 50.0,
-              height: 50.0,
-              child: RaisedButton(child: Icon(button), color: Colors.red),
-            ),
-          ),
-        ),
+      EdgeInsets.only(left: left, right: right, top: top, bottom: bottom),
+      child: ButtonTheme(
+        minWidth: 50.0,
+        height: 50.0,
+        child: RaisedButton(
+            child: Icon(button), color: color, onPressed: method),
       ),
     );
   }
 
-  Widget buttonControllerAction(IconData button, method, double left,
+  Widget buttonControllerAction(String button, method, double left,
       double right, double top, double bottom) {
     return Container(
       padding:
-          EdgeInsets.only(left: left, right: right, top: top, bottom: bottom),
-      child: Opacity(
-        opacity: opacityValue,
-        child: GestureDetector(
-          onTapDown: method,
-          onTapUp: (_) {
-            action = "idle";
-          },
-          // Our Custom Button!
-          child: Container(
-            child: ButtonTheme(
-              minWidth: 50.0,
-              height: 50.0,
-              child: RaisedButton(child: Icon(button), color: Colors.red),
-            ),
-          ),
-        ),
+      EdgeInsets.only(left: left, right: right, top: top, bottom: bottom),
+      child: ButtonTheme(
+        minWidth: 50.0,
+        height: 50.0,
+        child: RaisedButton(
+            child: Text(button), color: Colors.red, onPressed: method),
       ),
     );
   }
 
-  Widget addOnController1(
-      int addOnSelectionToJson, double left, double right, double top, double bottom) {
+  Widget addOnController1(int addOnSelectionToJson, double left, double right,
+      double top, double bottom) {
     return Container(
       width: 100,
       padding:
-      EdgeInsets.only(left: left, right: right, top: top, bottom: bottom),
+          EdgeInsets.only(left: left, right: right, top: top, bottom: bottom),
       child: DropdownButton<String>(
         isExpanded: true,
         value: dropdownAddOnValue1,
@@ -565,7 +798,7 @@ class _MyHomePageState extends State<MyHomePage> {
         },
         items: <String>[
           //dropdownAddOnValue,
-          "Add on",
+          "Add on",// need the same ontherwase crash
           "rocketEngine",
           "amphibious",
           "harrier",
@@ -594,12 +827,12 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
-  Widget addOnController2(
-      int addOnSelectionToJson, double left, double right, double top, double bottom) {
+  Widget addOnController2(int addOnSelectionToJson, double left, double right,
+      double top, double bottom) {
     return Container(
       width: 80,
       padding:
-      EdgeInsets.only(left: left, right: right, top: top, bottom: bottom),
+          EdgeInsets.only(left: left, right: right, top: top, bottom: bottom),
       child: DropdownButton<String>(
         isExpanded: true,
         value: dropdownAddOnValue2,
@@ -641,12 +874,12 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
-  Widget addOnController3(
-      int addOnSelectionToJson, double left, double right, double top, double bottom) {
+  Widget addOnController3(int addOnSelectionToJson, double left, double right,
+      double top, double bottom) {
     return Container(
       width: 80,
       padding:
-      EdgeInsets.only(left: left, right: right, top: top, bottom: bottom),
+          EdgeInsets.only(left: left, right: right, top: top, bottom: bottom),
       child: DropdownButton<String>(
         isExpanded: true,
         value: dropdownAddOnValue3,
