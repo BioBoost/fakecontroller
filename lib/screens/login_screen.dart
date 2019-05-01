@@ -1,8 +1,8 @@
 import 'dart:core';
+import 'package:bug_mobile_controller/bug/mqtt_builder.dart';
 import 'package:flutter/material.dart';
 import '../bug/user.dart';
 import '../settings/user_settings_storage.dart';
-import '../settings/mqtt_settings_storage.dart';
 import '../mqtt_settings.dart';
 import '../bug/simple_mqtt_client.dart';
 
@@ -100,7 +100,19 @@ class _LoginScreenState extends State<LoginScreen> {
                         .catchError((onError) {
                           print("Failed to save User.");
                         });
-                        Navigator.pushNamed(context, '/');
+
+                        // Create MQTT Client
+                        MqttSimpleClientBuilder.create()
+                        .then((client) {
+                          Navigator.pushNamed(context, '/', arguments: client);
+                        })
+                        .catchError((onError) {
+                          print("Failed to connect to MQTT");
+                          key.currentState.showSnackBar(new SnackBar(
+                            content: const Text("Failed to connect to MQTT")
+                          ));
+                        });
+                        
                     } else {
                       key.currentState.showSnackBar(new SnackBar(
                         content: const Text("Please enter ID and Name")
