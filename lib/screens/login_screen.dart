@@ -2,6 +2,9 @@ import 'dart:core';
 import 'package:flutter/material.dart';
 import '../bug/user.dart';
 import '../settings/user_settings_storage.dart';
+import '../settings/mqtt_settings_storage.dart';
+import '../mqtt_settings.dart';
+import '../bug/simple_mqtt_client.dart';
 
 class LoginScreen extends StatefulWidget {
   @override
@@ -15,6 +18,8 @@ class _LoginScreenState extends State<LoginScreen> {
   final key = new GlobalKey<ScaffoldState>();   // Required for Toast (Snackbar Messages)
 
   User _user = new User("", "");
+  MqttSettings mqttSettings = MqttSettings();
+  SimpleMqttClient client;
 
   @override
   void initState() {

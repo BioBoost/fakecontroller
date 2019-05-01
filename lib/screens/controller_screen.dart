@@ -1,9 +1,9 @@
 import 'dart:async';
 import 'dart:core';
+import 'package:bug_mobile_controller/bug/mqtt_builder.dart';
+import 'package:bug_mobile_controller/bug/simple_mqtt_client.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import '../mqtt_settings.dart';
-import '../bug/simple_mqtt_client.dart';
 
 class MyHomePage extends StatefulWidget {
   @override
@@ -19,7 +19,7 @@ class _MyHomePageState extends State<MyHomePage> {
   String displayedStringOld = "";
   static const String pubTopic = 'ttn';
   static const String pubHardwareTopic = 'hardware';
-  //builder.addString('Hello from mqtt_client');
+  //builder.addString('Hello from mqtt__client');
 
   Timer timer;
 
@@ -52,7 +52,7 @@ class _MyHomePageState extends State<MyHomePage> {
   bool startApp = true;
 
   void createJsonSendMqttButton() {
-    if (client != null && client.isConnected()) {
+    if (_client != null && _client.isConnected()) {
       displayedString = '{"movement":"' +
           movement +
           '","action":"' +
@@ -62,7 +62,7 @@ class _MyHomePageState extends State<MyHomePage> {
           '"}';
       if (displayedString != displayedStringOld) {
         displayedStringOld = displayedString;
-        client?.publish(pubTopic, displayedString);
+        _client?.publish(pubTopic, displayedString);
       }
       if (startApp) {
         startApp = false;
@@ -189,7 +189,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void createJsonSendMqttStart() {
-    if (client != null && client.isConnected()) {
+    if (_client != null && _client.isConnected()) {
       displayedString2 = '{"id":"' +
           idHardware +
           '","add_1":"' +
@@ -201,7 +201,7 @@ class _MyHomePageState extends State<MyHomePage> {
           '","dev_id":"' +
           username +
           '"}';
-      client?.publish(pubHardwareTopic, displayedString2);
+      _client?.publish(pubHardwareTopic, displayedString2);
     }
   }
 
@@ -268,15 +268,14 @@ class _MyHomePageState extends State<MyHomePage> {
   final brokerAddressController = TextEditingController(text: '0080d0803b102f01');
   final usernameController = TextEditingController(text: 'Tester');
 
-  MqttSettings mqttSettings = MqttSettings();
-  SimpleMqttClient client = null;
+  SimpleMqttClient _client = null;
 
   String messageFromMqtt = '{}';
   Map<String, dynamic> jsonMQTT;
 
   int _page = 0;
 
-  void addValuesToMqttClient() {
+  void addValuesToMqtt_client() {
     idHardware = brokerAddressController.text;
     username = usernameController.text;
   }
@@ -288,7 +287,7 @@ class _MyHomePageState extends State<MyHomePage> {
       DeviceOrientation.landscapeRight,
     ]);
     IconData connectionStateIcon;
-    if (client != null && client.isConnected()) {
+    if (_client != null && _client.isConnected()) {
       connectionStateIcon = Icons.cloud_done;
     } else {
       connectionStateIcon = Icons.cloud_off;
@@ -337,18 +336,20 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
         RaisedButton(
           child: Text(
-              (client != null && client.isConnected())
+              (_client != null && _client.isConnected())
                   ? 'Disconnect'
                   : 'Connect'),
           textColor: Colors.white,
-          color: (client != null && client.isConnected()) ? Colors.greenAccent : Colors.redAccent,
+          color: (_client != null && _client.isConnected()) ? Colors.greenAccent : Colors.redAccent,
           onPressed: () {
-            addValuesToMqttClient();
-            if (client != null && client.isConnected()) {
+            addValuesToMqtt_client();
+            if (_client != null && _client.isConnected()) {
               startApp = true;
-              client?.disconnect();
+              _client?.disconnect();
             } else {
-              client = new SimpleMqttClient(mqttSettings);
+              MqttSimpleClientBuilder.create().then((client) {
+                _client = client;
+              });
             }
           },
         ),
