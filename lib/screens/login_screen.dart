@@ -84,4 +84,12 @@ class _LoginScreenState extends State<LoginScreen> {
       )
     );
   }
+
+  @override
+  void dispose() {
+    // Clean up the controllers when the Widget is disposed
+    userIdController.dispose();
+    userNameController.dispose();
+    super.dispose();
+  }
 }
