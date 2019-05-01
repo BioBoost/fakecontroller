@@ -2,9 +2,9 @@ import 'dart:async';
 import 'dart:core';
 import 'package:bug_mobile_controller/bug/simple_mqtt_client.dart';
 import 'package:bug_mobile_controller/bug/user.dart';
-import 'package:bug_mobile_controller/mqtt_settings.dart';
+import 'package:bug_mobile_controller/widgets/controller_partials/controller_mid.dart';
+import 'package:bug_mobile_controller/widgets/controller_partials/controller_side.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 
 class MyHomePage extends StatefulWidget {
   @override
@@ -295,156 +295,29 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    SystemChrome.setPreferredOrientations([
-      DeviceOrientation.landscapeLeft,
-      DeviceOrientation.landscapeRight,
-    ]);
-
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: Scaffold(
-        body: PageView(
-          controller: _pageController,
-          onPageChanged: onPageChanged,
+  //   SystemChrome.setPreferredOrientations([
+  //     DeviceOrientation.landscapeLeft,
+  //     DeviceOrientation.landscapeRight,
+  //   ]);
+    return Scaffold(
+      body: Padding(
+        padding: const EdgeInsets.all(32),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.start,
           children: <Widget>[
-            _buildFakecontrollerPage(),
+            // This is the left part of the controller,
+            // which takes 3/8 parts of the screen width
+            ControllerSide(null, null, null, null, "assets/image/left_side.png"),
+
+            ControllerMid("assets/image/mid.png"),
+
+            // This is the right part of the controller,
+            // which takes 3/8 parts of the screen width
+            ControllerSide(null, null, null, null, "assets/image/right_side.png"),
+
           ],
-        ),
-      ),
-    );
-  }
-
-
-  Container _buildFakecontrollerPage() {
-    return Container(
-      child: Stack(
-        children: <Widget>[
-          Container(
-            decoration: BoxDecoration(
-              image: DecorationImage(
-                  image: ExactAssetImage('assets/image/bug-logo-z.png'),
-                  fit: BoxFit.fitWidth,
-                  alignment: Alignment.bottomLeft),
-            ),
-          ),
-             Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: <Widget>[
-                //1e colom
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: <Widget>[
-                    addOnController1(1, 0, 0, 0, 90),
-                    buttonControllerMove(
-                        Icons.arrow_left, onPressedLeft,leftButtonStateC, 75, 0, 0, 140),
-                  ],
-                ),
-                //2e colom
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    buttonControllerMove(
-                        Icons.arrow_drop_up, onPressedUp,upButtonStateC, 0, 0, 0, 50),
-                    buttonControllerMove(
-                        Icons.arrow_drop_down, onPressedDown,downButtonStateC, 0, 0, 0, 90),
-                  ],
-                ),
-                //3e colom
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    buttonControllerMove(
-                        Icons.arrow_right, onPressedRight,rightButtonStateC, 0, 0, 0, 140),
-                  ],
-                ),
-
-                //4e colom
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    buttonControllerAction(
-                        "Select", actionSelect, 40, 0, 0, 100),
-                  ],
-                ),
-
-                //5e kolom
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    buttonControllerAction(
-                        "Start", actionStart, 20, 0, 0, 100),
-                  ],
-                ),
-                //6e colom
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    addOnController2(2, 0, 0, 0, 90),
-                    buttonControllerAction(
-                        "Y", actionY, 35, 0, 0, 140),
-                  ],
-                ),
-                //7ecolom
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    buttonControllerAction(
-                        "X", actionX, 0, 0, 0, 60),
-                    buttonControllerAction(
-                        "B", actionB, 0, 0, 0, 85),
-                  ],
-                ),
-//8e colom
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    addOnController3(3, 0, 0, 0, 90),
-                    buttonControllerAction(
-                        "A", ActionA, 0, 20, 0, 140),
-                  ],
-                ),
-              ],
-            ),
-          //),
-        ],
-      ),
-    );
-  }
-
-  Widget buttonControllerMove(IconData button, method,Color color , double left,
-      double right, double top, double bottom) {
-    return Container(
-      padding:
-      EdgeInsets.only(left: left, right: right, top: top, bottom: bottom),
-      child: ButtonTheme(
-        minWidth: 50.0,
-        height: 50.0,
-        child: RaisedButton(
-            child: Icon(button), color: color, onPressed: method),
-      ),
-    );
-  }
-
-  Widget buttonControllerAction(String button, method, double left,
-      double right, double top, double bottom) {
-    return Container(
-      padding:
-      EdgeInsets.only(left: left, right: right, top: top, bottom: bottom),
-      child: ButtonTheme(
-        minWidth: 50.0,
-        height: 50.0,
-        child: RaisedButton(
-            child: Text(button), color: Colors.red, onPressed: method),
-      ),
+        )
+      )
     );
   }
 
