@@ -23,7 +23,6 @@ class _MyHomePageState extends State<MyHomePage> {
   String displayedStringOld = "";
   static const String pubTopic = 'ttn';
   static const String pubHardwareTopic = 'hardware';
-  //builder.addString('Hello from mqtt_client');
   IconData connectionStateIcon;
 
   Timer timer;
@@ -62,9 +61,6 @@ class _MyHomePageState extends State<MyHomePage> {
   Color AButtonStateC =  Colors.red;
   Color XButtonStateC =  Colors.red;
   Color BButtonStateC = Colors.red;
-
-  //Color selection = Colors.green[400];
-
 
   void createJsonSendMqttButton() {
     if (_client != null && _client.isConnected()) {
@@ -294,10 +290,6 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   String messageFromMqtt = '{}';
-  //Map jsonMap = JSON.decode(messageFromMqtt);
-  //Map<String, dynamic> user = jsonDecode(messageFromMqtt);
-  //dynamic convert(String input) => _parseJson(input, _reviver);
-
   Map<String, dynamic> jsonMQTT;
 
   int _page = 0;
@@ -317,23 +309,6 @@ class _MyHomePageState extends State<MyHomePage> {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: Scaffold(
-
-        ///resizeToAvoidBottomPadding: false,
-        ///
-        //
-        /*
-        bottomNavigationBar: BottomNavigationBar(
-          items: <BottomNavigationBarItem>[
-            BottomNavigationBarItem(
-                icon: Icon(Icons.build), title: Text('Add broker')),
-            BottomNavigationBarItem(
-                icon: Icon(Icons.gamepad), title: Text('BUG Controller')),
-          ],
-          currentIndex: _page,
-          fixedColor: Colors.blue,
-          onTap: navigationTapped,
-        ),
-        */
         body: PageView(
           controller: _pageController,
           onPageChanged: onPageChanged,
@@ -358,63 +333,25 @@ class _MyHomePageState extends State<MyHomePage> {
                   alignment: Alignment.bottomLeft),
             ),
           ),
-         //SingleChildScrollView(
              Row(
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.end,
               children: <Widget>[
                 //1e colom
                 Column(
-                  //mainAxisSize: MainAxisSize.min,
-                  //crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisAlignment: MainAxisAlignment.end,
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: <Widget>[
                     addOnController1(1, 0, 0, 0, 90),
                     buttonControllerMove(
-                      //left: left, right: right, top: top, bottom: bottom
                         Icons.arrow_left, onPressedLeft,leftButtonStateC, 75, 0, 0, 140),
                   ],
                 ),
                 //2e colom
                 Column(
-                  //crossAxisAlignment: CrossAxisAlignment.stretch,
                   mainAxisAlignment: MainAxisAlignment.end,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
-                    /*
-                      Flexible(
-                        flex: 1,
-                        child: Container(
-                          width:
-                              77.0, // 77 because othrise the t wil be on a nieuw line
-                          child: DropdownButton<String>(
-                            isExpanded: true,
-                            value: dropdownValueMovementDefault,
-                            onChanged: (String newValue) {
-                              setState(() {
-                                dropdownValueMovementDefault = newValue;
-                              });
-                            },
-                            items: <String>[
-                              dropdownValueMovementDefault,
-                              'Rocket engine',
-                              'Amphibious',
-                              'Harrier'
-                            ].map<DropdownMenuItem<String>>((String value) {
-                              return DropdownMenuItem<String>(
-                                value: value,
-                                child: Text(value,
-                                    style: new TextStyle(
-                                      color: Colors.black,
-                                      fontSize: 10.0,
-                                    )),
-                              );
-                            }).toList(),
-                          ),
-                        ),
-                      ),
-                      */
                     buttonControllerMove(
                         Icons.arrow_drop_up, onPressedUp,upButtonStateC, 0, 0, 0, 50),
                     buttonControllerMove(
