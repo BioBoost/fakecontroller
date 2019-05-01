@@ -18,4 +18,9 @@ class MqttSettings {
       return broker;
     }
   }
+
+  @override
+  String toString() {
+    return clientId + "@" + getBrokerUrl() + ":" + port.toString();
+  }
 }
