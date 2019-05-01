@@ -1,6 +1,7 @@
 import 'dart:core';
 import 'package:flutter/material.dart';
 import 'package:splashscreen/splashscreen.dart';
+import '../settings/user_settings_storage.dart';
 
 class LoadingScreen extends StatefulWidget {
   @override
@@ -9,10 +10,23 @@ class LoadingScreen extends StatefulWidget {
 
 class LoadingScreenState extends State<LoadingScreen> {
   @override
+  void initState() {
+    // Load User settings
+    UserSettingsStorage.load()
+    .then((user) {
+      print("User: " + user.toString());
+    })
+    .catchError((onError) {
+      print("Failed to load User.");
+    });
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return new SplashScreen(
       seconds: 6,
-      navigateAfterSeconds: '/',
+      navigateAfterSeconds: '/login',
       title: new Text('Welcome to the mobile BUG Game Controller',
         textAlign: TextAlign.center,
         style: new TextStyle(
