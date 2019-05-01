@@ -1,5 +1,5 @@
-name: fakecontroller
-description: fakecontroller
+name: bug_mobile_controller
+description: Controller app for BUG, the worlds most low power game console.
 
 # The following defines the version and build number for your application.
 # A version number is three numbers separated by dots, like 1.2.43
@@ -12,20 +12,11 @@ version: 1.0.0+1
 environment:
   sdk: ">=2.0.0-dev.68.0 <3.0.0"
 
-
-#flutter_launcher_icons: "^0.6.1"
-#flutter_icons:
- # image_path: "icon.png"
-  #android: true
-  #ios: true
-
 dependencies:
   mqtt_client: ^5.4.0
   flutter:
     sdk: flutter
   splashscreen: ^1.2.0
-
-
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
@@ -34,7 +25,6 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
-
 
 # For information on the generic Dart part of this file, see the
 # following page: https://www.dartlang.org/tools/pub/pubspec
@@ -47,15 +37,9 @@ flutter:
   # the material Icons class.
   uses-material-design: true
 
-
   assets:
     - assets/image/bug-logo.png
     - assets/image/bug-logo-z.png
-
-  # To add assets to your application, add an assets section, like this:
-  # assets:
-  #  - images/a_dot_burr.jpeg
-  #  - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.io/assets-and-images/#resolution-aware.
