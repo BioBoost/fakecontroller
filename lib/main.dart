@@ -7,7 +7,7 @@ import 'screens/login_screen.dart';
 void main() {
   runApp(MaterialApp(
     title: 'BUG Mobile Game Controller',
-    initialRoute: '/login',
+    initialRoute: '/loading',
     routes: {
       '/loading': (context) => LoadingScreen(),
       '/login': (context) => LoginScreen(),
