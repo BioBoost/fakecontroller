@@ -16,7 +16,7 @@ class ControllerButton extends StatelessWidget {
       child: Container(
         child: new LayoutBuilder(
           builder: (context, constraint) {
-            return RaisedIconButton(icon, onPressed, Colors.redAccent, constraint.biggest.width);
+            return RaisedIconButton(icon: icon, onPressed: onPressed, color: Colors.redAccent, size: constraint.biggest.width);
           }
         ),
       ),
