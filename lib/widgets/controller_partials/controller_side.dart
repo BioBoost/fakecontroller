@@ -4,18 +4,43 @@ import 'package:flutter/material.dart';
 
 class ControllerSide extends StatelessWidget {
 
-  ControllerSide(this.onTopPressed, this.onBottomPressed,
-    this.onLeftPressed, this.onRightPressed,
-    this.imageAssetKey);
+  const ControllerSide({
+    Key key,
+    @required this.onTopPressed,
+    @required this.onBottomPressed,
+    @required this.onLeftPressed,
+    @required this.onRightPressed,
+    @required this.imageAssetKey,
+    this.useLetters = false
+  }) : super(key: key);
 
   final VoidCallback onTopPressed;
   final VoidCallback onBottomPressed;
   final VoidCallback onLeftPressed;
   final VoidCallback onRightPressed;
   final String imageAssetKey;
+  final bool useLetters;
 
   @override
   Widget build(BuildContext context) {
+    List<ControllerButton> controls;
+
+    if (useLetters) {
+      controls = [
+        ControllerButton(text: 'X', onPressed: onTopPressed),
+        ControllerButton(text: 'Y', onPressed: onLeftPressed),
+        ControllerButton(text: 'A', onPressed: onRightPressed),
+        ControllerButton(text: 'B', onPressed: onBottomPressed),
+      ];
+    } else {
+      controls = [
+        ControllerButton(icon: Icons.keyboard_arrow_up, onPressed: onTopPressed),
+        ControllerButton(icon: Icons.keyboard_arrow_left, onPressed: onLeftPressed),
+        ControllerButton(icon: Icons.keyboard_arrow_right, onPressed: onRightPressed),
+        ControllerButton(icon: Icons.keyboard_arrow_down, onPressed: onBottomPressed),
+      ];
+    }
+
     return Expanded(
       flex: 3,
       child: Container(
@@ -35,8 +60,8 @@ class ControllerSide extends StatelessWidget {
               flex: 1,
               child: Container(
                 child: Row(children: <Widget>[ // Cells in the grid
-                  ExpandedFlexSpacer(1),                          
-                  ControllerButton(Icons.keyboard_arrow_up, onTopPressed),
+                  ExpandedFlexSpacer(1),
+                  controls[0],
                   ExpandedFlexSpacer(1),       
                 ])
               ),
@@ -47,9 +72,9 @@ class ControllerSide extends StatelessWidget {
               flex: 1,
               child: Container(
                 child: Row(children: <Widget>[ // Cells in the grid
-                  ControllerButton(Icons.keyboard_arrow_left, onLeftPressed),
+                  controls[1],
                   ExpandedFlexSpacer(1),
-                  ControllerButton(Icons.keyboard_arrow_right, onRightPressed),
+                  controls[2],
                 ])
               ),
             ),
@@ -59,8 +84,8 @@ class ControllerSide extends StatelessWidget {
               flex: 1,
               child: Container(
                 child: Row(children: <Widget>[ // Cells in the grid
-                  ExpandedFlexSpacer(1),                          
-                  ControllerButton(Icons.keyboard_arrow_down, onBottomPressed),
+                  ExpandedFlexSpacer(1),
+                  controls[3],
                   ExpandedFlexSpacer(1),       
                 ])
               ),

@@ -3,11 +3,17 @@ import 'package:flutter/material.dart';
 
 class ControllerButton extends StatelessWidget {
 
-  ControllerButton(this.icon, this.onPressed);
+  const ControllerButton({
+    Key key,
+    this.icon,
+    @required this.onPressed,
+    this.text
+  }) : super(key: key);
 
   final IconData icon;
   final VoidCallback onPressed;
   final double padding = 5;
+  final String text;
 
   @override
   Widget build(BuildContext context) {
@@ -16,7 +22,7 @@ class ControllerButton extends StatelessWidget {
       child: Container(
         child: new LayoutBuilder(
           builder: (context, constraint) {
-            return RaisedIconButton(icon: icon, onPressed: onPressed, color: Colors.redAccent, size: constraint.biggest.width);
+            return RaisedIconButton(icon: icon, onPressed: onPressed, color: Colors.redAccent, size: constraint.biggest.width, text: text);
           }
         ),
       ),

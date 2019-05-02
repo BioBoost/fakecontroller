@@ -95,11 +95,11 @@ class _MyHomePageState extends State<MyHomePage> {
                   // This is the left part of the controller,
                   // which takes 3/8 parts of the screen width
                   ControllerSide(
-                    () => { move("forward") },
-                    () => { move("backward") },
-                    () => { move("left") },
-                    () => { move("right") },
-                    "assets/image/left_side.png"),
+                    onTopPressed: () => { move("forward") },
+                    onBottomPressed: () => { move("backward") },
+                    onLeftPressed: () => { move("left") },
+                    onRightPressed: () => { move("right") },
+                    imageAssetKey: "assets/image/left_side.png"),
 
                   // Mid part with select and start buttons
                   ControllerMid("assets/image/mid.png", clearActions, start),
@@ -107,10 +107,12 @@ class _MyHomePageState extends State<MyHomePage> {
                   // This is the right part of the controller,
                   // which takes 3/8 parts of the screen width
                   ControllerSide(
-                    () => { act("X") },
-                    () => { act("B") },
-                    () => { act("Y") },
-                    () => { act("A") }, "assets/image/right_side.png"),
+                    onTopPressed: () => { act("X") },
+                    onBottomPressed: () => { act("B") },
+                    onLeftPressed: () => { act("Y") },
+                    onRightPressed: () => { act("A") },
+                    imageAssetKey: "assets/image/right_side.png",
+                    useLetters: true),
 
                 ],
               )),

@@ -41,9 +41,9 @@ class ControllerMid extends StatelessWidget {
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
-                  ControllerButton(Icons.shuffle, onSelect),
+                  ControllerButton(icon: Icons.shuffle, onPressed: onSelect),
                   ExpandedFlexSpacer(1),                          
-                  ControllerButton(Icons.play_circle_filled, onStart)
+                  ControllerButton(icon: Icons.play_circle_filled, onPressed: onStart)
                 ]
               )
             )
