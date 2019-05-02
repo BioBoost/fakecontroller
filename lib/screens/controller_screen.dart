@@ -214,7 +214,8 @@ class _MyHomePageState extends State<MyHomePage> {
                 // which takes 3/8 parts of the screen width
                 ControllerSide(null, null, null, null, "assets/image/left_side.png"),
 
-                ControllerMid("assets/image/mid.png"),
+                // Mid part with select and start buttons
+                ControllerMid("assets/image/mid.png", () => { print("Select")}, () => { print("Start") }),
 
                 // This is the right part of the controller,
                 // which takes 3/8 parts of the screen width
