@@ -73,15 +73,12 @@ class _MyHomePageState extends State<MyHomePage> {
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: <Widget>[
                 AddonDropdown(_addons, (selected) {
-                  print("Addon 1: " + selected.name);
                   _selectedAddons[0] = selected;
                 }),
                 AddonDropdown(_addons, (selected) {
-                  print("Addon 2: " + selected.name);
                   _selectedAddons[1] = selected;
                 }),
                 AddonDropdown(_addons, (selected) {
-                  print("Addon 3: " + selected.name);
                   _selectedAddons[2] = selected;
                 }),
               ]
