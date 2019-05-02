@@ -45,3 +45,7 @@ void main()
   debugPaintSizeEnabled=true;
   // ...
 ```
+
+## Privacy Policy
+
+Can be found at [https://bug-controller.flycricket.io](https://bug-controller.flycricket.io).
