@@ -5,6 +5,7 @@ import 'package:bug_mobile_controller/bug/addon_loader.dart';
 import 'package:bug_mobile_controller/bug/simple_mqtt_client.dart';
 import 'package:bug_mobile_controller/bug/user.dart';
 import 'package:bug_mobile_controller/helpers/json_action_encoder.dart';
+import 'package:bug_mobile_controller/helpers/json_hardware_description_encoder.dart';
 import 'package:bug_mobile_controller/screens/helpers/login_arguments.dart';
 import 'package:bug_mobile_controller/widgets/controller_partials/addon_dropdown.dart';
 import 'package:bug_mobile_controller/widgets/controller_partials/controller_mid.dart';
@@ -75,21 +76,9 @@ class _MyHomePageState extends State<MyHomePage> {
 
   String idHardware = "0080d0803b102f01";
 
-  void createJsonSendMqttStart() {
-    if (_client != null && _client.isConnected()) {
-      displayedString2 = '{"id":"' +
-          idHardware +
-          '","add_1":"' +
-          (_selectedAddons[0]?.id ?? '') +
-          '","add_2":"' +
-          (_selectedAddons[1]?.id ?? '') +
-          '","add_3":"' +
-          (_selectedAddons[2]?.id ?? '') +
-          '","dev_id":"' +
-          _user.getName() +
-          '"}';
-      _client.publish(mqttHardwareTopic, displayedString2);
-    }
+  void publishInitialHardwareDescription() {
+    String json = JsonHardwareDescriptionEncoder.encode(_user.getId(), _selectedAddons, devId).toString();
+    _client.publish(mqttHardwareTopic, json);
   }
 
   String messageFromMqtt = '{}';
@@ -188,7 +177,6 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void start() {
-    createJsonSendMqttStart();
-    publishActions();
+    publishInitialHardwareDescription();
   }
 }
