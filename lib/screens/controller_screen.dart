@@ -14,12 +14,12 @@ import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:crypto/crypto.dart';
 
-class MyHomePage extends StatefulWidget {
+class ControllerScreen extends StatefulWidget {
   @override
-  _MyHomePageState createState() => _MyHomePageState();
+  _ControllerScreenState createState() => _ControllerScreenState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
+class _ControllerScreenState extends State<ControllerScreen> {
   SimpleMqttClient _client;
   User _user;
   String devId;

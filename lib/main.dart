@@ -11,7 +11,7 @@ void main() {
     routes: {
       '/loading': (context) => LoadingScreen(),
       '/login': (context) => LoginScreen(),
-      '/': (context) => MyHomePage(),
+      '/': (context) => ControllerScreen(),
     }
   ));
 }
