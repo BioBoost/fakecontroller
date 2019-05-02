@@ -302,20 +302,36 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
       body: Padding(
         padding: const EdgeInsets.all(32),
-        child: Row(
+        child: Column(
+
           mainAxisAlignment: MainAxisAlignment.start,
           children: <Widget>[
-            // This is the left part of the controller,
-            // which takes 3/8 parts of the screen width
-            ControllerSide(null, null, null, null, "assets/image/left_side.png"),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: <Widget>[
+                addOnController1(1, 0, 0, 0, 0),
+                addOnController1(1, 0, 0, 0, 0),
+                addOnController1(1, 0, 0, 0, 0)
+              ]
+            ),
 
-            ControllerMid("assets/image/mid.png"),
+            Flexible(child: Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: <Widget>[
+                // This is the left part of the controller,
+                // which takes 3/8 parts of the screen width
+                ControllerSide(null, null, null, null, "assets/image/left_side.png"),
 
-            // This is the right part of the controller,
-            // which takes 3/8 parts of the screen width
-            ControllerSide(null, null, null, null, "assets/image/right_side.png"),
+                ControllerMid("assets/image/mid.png"),
 
-          ],
+                // This is the right part of the controller,
+                // which takes 3/8 parts of the screen width
+                ControllerSide(null, null, null, null, "assets/image/right_side.png"),
+
+              ],
+            ))
+
+          ]
         )
       )
     );
