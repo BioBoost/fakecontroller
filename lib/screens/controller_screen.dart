@@ -1,7 +1,10 @@
 import 'dart:async';
 import 'dart:core';
+import 'package:bug_mobile_controller/bug/addon.dart';
+import 'package:bug_mobile_controller/bug/addon_loader.dart';
 import 'package:bug_mobile_controller/bug/simple_mqtt_client.dart';
 import 'package:bug_mobile_controller/bug/user.dart';
+import 'package:bug_mobile_controller/widgets/controller_partials/addon_dropdown.dart';
 import 'package:bug_mobile_controller/widgets/controller_partials/controller_mid.dart';
 import 'package:bug_mobile_controller/widgets/controller_partials/controller_side.dart';
 import 'package:flutter/material.dart';
@@ -14,6 +17,8 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   SimpleMqttClient _client;
   User _user = new User("hugerthtreuiheqehqweq", "NDW");
+
+  List<Addon> _addons = AddonLoader.load();
 
   PageController _pageController;
   int groupValue;
@@ -309,9 +314,15 @@ class _MyHomePageState extends State<MyHomePage> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: <Widget>[
-                addOnController1(1, 0, 0, 0, 0),
-                addOnController1(1, 0, 0, 0, 0),
-                addOnController1(1, 0, 0, 0, 0)
+                AddonDropdown(_addons, (selected) => {
+                  print("Addon 1: " + selected.name)
+                }),
+                AddonDropdown(_addons, (selected) => {
+                  print("Addon 2: " + selected.name)
+                }),
+                AddonDropdown(_addons, (selected) => {
+                  print("Addon 3: " + selected.name)
+                }),
               ]
             ),
 
@@ -334,147 +345,6 @@ class _MyHomePageState extends State<MyHomePage> {
           ]
         )
       )
-    );
-  }
-
-  Widget addOnController1(int addOnSelectionToJson, double left, double right,
-      double top, double bottom) {
-    return Container(
-      width: 100,
-      padding:
-          EdgeInsets.only(left: left, right: right, top: top, bottom: bottom),
-      child: DropdownButton<String>(
-        isExpanded: true,
-        value: dropdownAddOnValue1,
-        onChanged: (String newValue) {
-          setState(() {
-            dropdownAddOnValue1 = newValue;
-            addHascodeAddons(dropdownAddOnValue1, addOnSelectionToJson);
-            createJsonSendMqttStart();
-          });
-        },
-        items: <String>[
-          //dropdownAddOnValue,
-          "Add on",// need the same ontherwase crash
-          "rocketEngine",
-          "amphibious",
-          "harrier",
-          "adamantium",
-          "gravyShield",
-          "nanobots",
-          "structuralStrengthening",
-          "Flammenwerpfer",
-          "laser",
-          "mines",
-          "plasmaGun",
-          "empBomb",
-          "ram",
-          "gatling gun"
-        ].map<DropdownMenuItem<String>>((String value) {
-          return DropdownMenuItem<String>(
-            value: value,
-            child: Text(value,
-                style: new TextStyle(
-                  color: Colors.black,
-                  fontSize: 15.0,
-                )),
-          );
-        }).toList(),
-      ),
-    );
-  }
-
-  Widget addOnController2(int addOnSelectionToJson, double left, double right,
-      double top, double bottom) {
-    return Container(
-      width: 80,
-      padding:
-          EdgeInsets.only(left: left, right: right, top: top, bottom: bottom),
-      child: DropdownButton<String>(
-        isExpanded: true,
-        value: dropdownAddOnValue2,
-        onChanged: (String newValue) {
-          setState(() {
-            dropdownAddOnValue2 = newValue;
-            addHascodeAddons(dropdownAddOnValue2, addOnSelectionToJson);
-            createJsonSendMqttStart();
-          });
-        },
-        items: <String>[
-          //dropdownAddOnValue,
-          "Add on",
-          "rocketEngine",
-          "amphibious",
-          "harrier",
-          "adamantium",
-          "gravyShield",
-          "nanobots",
-          "structuralStrengthening",
-          "Flammenwerpfer",
-          "laser",
-          "mines",
-          "plasmaGun",
-          "empBomb",
-          "ram",
-          "gatling gun"
-        ].map<DropdownMenuItem<String>>((String value) {
-          return DropdownMenuItem<String>(
-            value: value,
-            child: Text(value,
-                style: new TextStyle(
-                  color: Colors.black,
-                  fontSize: 15.0,
-                )),
-          );
-        }).toList(),
-      ),
-    );
-  }
-
-  Widget addOnController3(int addOnSelectionToJson, double left, double right,
-      double top, double bottom) {
-    return Container(
-      width: 80,
-      padding:
-          EdgeInsets.only(left: left, right: right, top: top, bottom: bottom),
-      child: DropdownButton<String>(
-        isExpanded: true,
-        value: dropdownAddOnValue3,
-        onChanged: (String newValue) {
-          setState(() {
-            dropdownAddOnValue3 = newValue;
-            addHascodeAddons(dropdownAddOnValue3, addOnSelectionToJson);
-            createJsonSendMqttStart();
-          });
-        },
-        items: <String>[
-          //dropdownAddOnValue,
-          "Add on",
-          "rocketEngine",
-          "amphibious",
-          "harrier",
-          "adamantium",
-          "gravyShield",
-          "nanobots",
-          "structuralStrengthening",
-          "Flammenwerpfer",
-          "laser",
-          "mines",
-          "plasmaGun",
-          "empBomb",
-          "ram",
-          "gatling gun"
-        ].map<DropdownMenuItem<String>>((String value) {
-          return DropdownMenuItem<String>(
-            value: value,
-            child: Text(value,
-                style: new TextStyle(
-                  color: Colors.black,
-                  fontSize: 15.0,
-                )),
-          );
-        }).toList(),
-      ),
     );
   }
 
