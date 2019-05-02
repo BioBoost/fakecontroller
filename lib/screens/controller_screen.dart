@@ -23,8 +23,8 @@ class _MyHomePageState extends State<MyHomePage> {
 
   List<Addon> _addons = AddonLoader.load();
 
-  static const String mqttActionTopic = 'test/ttn';
-  static const String mqttHardwareTopic = 'test/hardware';
+  static const String mqttActionTopic = 'ttn';
+  static const String mqttHardwareTopic = 'hardware';
 
   Timer timer;
 
