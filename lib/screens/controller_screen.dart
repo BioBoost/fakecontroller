@@ -76,14 +76,14 @@ class _MyHomePageState extends State<MyHomePage> {
           '","dev_id":"' +
           _user.getName() +
           '"}';
-      if (displayedString != displayedStringOld) {
-        displayedStringOld = displayedString;
+      // if (displayedString != displayedStringOld) {
+      //   displayedStringOld = displayedString;
         _client.publish(pubTopic, displayedString);
-      }
-      if (startApp) {
-        startApp = false;
-        createJsonSendMqttStart();
-      }
+      // }
+      // if (startApp) {
+      //   startApp = false;
+      //   createJsonSendMqttStart();
+      // }
     }
   }
 
@@ -104,66 +104,6 @@ class _MyHomePageState extends State<MyHomePage> {
           '"}';
       _client.publish(pubHardwareTopic, displayedString2);
     }
-  }
-
-  void onPressedLeft() {
-    setState(() {
-      movement = "left";
-    });
-  }
-
-  void onPressedUp() {
-    setState(() {
-      movement = "forward";
-    });
-  }
-
-  void onPressedDown() {
-    setState(() {
-      movement = "backward";
-    });
-  }
-
-  void onPressedRight() {
-    setState(() {
-      movement = "right";
-    });
-  }
-
-  void actionSelect() {
-    setState(() {
-      action = "Select";
-    });
-  }
-
-  void actionStart() {
-    setState(() {
-      action = "start";
-    });
-  }
-
-  void actionY() {
-    setState(() {
-      action = "Y";
-    });
-  }
-
-  void actionX() {
-    setState(() {
-      action = "X";
-    });
-  }
-
-  void actionB() {
-    setState(() {
-      action = "B";
-    });
-  }
-
-  void ActionA() {
-    setState(() {
-      action = "A";
-    });
   }
 
   String messageFromMqtt = '{}';
@@ -212,17 +152,29 @@ class _MyHomePageState extends State<MyHomePage> {
               children: <Widget>[
                 // This is the left part of the controller,
                 // which takes 3/8 parts of the screen width
-                ControllerSide(null, null, null, null, "assets/image/left_side.png"),
+                ControllerSide(
+                  () => { movement = "up" },
+                  () => { movement = "backward" },
+                  () => { movement = "left" },
+                  () => { movement = "right" }, "assets/image/left_side.png"),
 
                 // Mid part with select and start buttons
-                ControllerMid("assets/image/mid.png", () => { print("Select")}, () => { print("Start") }),
+                ControllerMid("assets/image/mid.png", () => { print("Select")}, start),
 
                 // This is the right part of the controller,
                 // which takes 3/8 parts of the screen width
-                ControllerSide(null, null, null, null, "assets/image/right_side.png"),
+                ControllerSide(
+                  () => { action = "X" },
+                  () => { action = "B" },
+                  () => { action = "Y" },
+                  () => { action = "A" }, "assets/image/right_side.png"),
 
               ],
-            ))
+            )),
+
+            Row(children: <Widget>[
+              
+            ],)
 
           ]
         )
@@ -245,7 +197,12 @@ class _MyHomePageState extends State<MyHomePage> {
   void initState() {
     _pageController = PageController();
     super.initState();
-    timer = Timer.periodic(
-        Duration(seconds: 3), (Timer t) => createJsonSendMqttButton());
+    // timer = Timer.periodic(
+    //     Duration(seconds: 3), (Timer t) => createJsonSendMqttButton());
+  }
+
+  void start() {
+    createJsonSendMqttStart();
+    createJsonSendMqttButton();
   }
 }
