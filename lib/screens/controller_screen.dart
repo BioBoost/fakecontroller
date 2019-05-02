@@ -11,6 +11,8 @@ import 'package:bug_mobile_controller/widgets/controller_partials/addon_dropdown
 import 'package:bug_mobile_controller/widgets/controller_partials/controller_mid.dart';
 import 'package:bug_mobile_controller/widgets/controller_partials/controller_side.dart';
 import 'package:flutter/material.dart';
+import 'dart:convert';
+import 'package:crypto/crypto.dart';
 
 class MyHomePage extends StatefulWidget {
   @override
@@ -20,6 +22,7 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   SimpleMqttClient _client;
   User _user;
+  String devId;
 
   List<Addon> _addons = AddonLoader.load();
 
@@ -36,7 +39,6 @@ class _MyHomePageState extends State<MyHomePage> {
   Timer actionTimer;
   int timeBeforeSend = 4;
 
-  String devId = "WhatToTakeAsDevId";
   List<Addon> _selectedAddons = new List<Addon>(3);
 
   @override
@@ -60,7 +62,10 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     final LoginArguments args = ModalRoute.of(context).settings.arguments;
     if (args?.mqttClient != null) {  _client = args.mqttClient; }
-    if (args?.user != null) {  _user = args.user; }
+    if (args?.user != null) { 
+      _user = args.user;
+      devId = md5.convert(utf8.encode(_user.getName()+_user.getId())).toString().substring(0, 25);
+    }
   //   SystemChrome.setPreferredOrientations([
   //     DeviceOrientation.landscapeLeft,
   //     DeviceOrientation.landscapeRight,
