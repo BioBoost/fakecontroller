@@ -26,12 +26,15 @@ class _MyHomePageState extends State<MyHomePage> {
   static const String mqttActionTopic = 'ttn';
   static const String mqttHardwareTopic = 'hardware';
 
-  Timer timer;
+  String _action = "idle";
+  String _movement = "idle";
+  String _actionFeedback = '';
+  String _movementFeedback = '';
+  String _feedback = 'Select addons and press start';
 
-  String action = "idle";
-  String movement = "idle";
-
-  bool startApp = true;
+  bool started = false;
+  Timer actionTimer;
+  int timeBeforeSend = 4;
 
   String devId = "WhatToTakeAsDevId";
   List<Addon> _selectedAddons = new List<Addon>(3);
@@ -39,12 +42,12 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void dispose() {
     // Clean up the controller when the Widget is disposed
-    timer?.cancel();
+    actionTimer?.cancel();
     super.dispose();
   }
 
   void publishActions() {
-    String json = JsonActionEncoder.encode(devId, action, movement);
+    String json = JsonActionEncoder.encode(devId, _action, _movement);
     _client?.publish(mqttActionTopic, json);
   }
 
@@ -65,68 +68,152 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
       body: Padding(
         padding: const EdgeInsets.all(32),
-        child: Column(
+        // Stack for placing feedback on top
+        child: Stack(children: <Widget>[
+          Column(
 
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: <Widget>[
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: <Widget>[
-                AddonDropdown(_addons, (selected) {
-                  _selectedAddons[0] = selected;
-                }),
-                AddonDropdown(_addons, (selected) {
-                  _selectedAddons[1] = selected;
-                }),
-                AddonDropdown(_addons, (selected) {
-                  _selectedAddons[2] = selected;
-                }),
-              ]
-            ),
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: <Widget>[
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: <Widget>[
+                  AddonDropdown(_addons, (selected) {
+                    _selectedAddons[0] = selected;
+                  }),
+                  AddonDropdown(_addons, (selected) {
+                    _selectedAddons[1] = selected;
+                  }),
+                  AddonDropdown(_addons, (selected) {
+                    _selectedAddons[2] = selected;
+                  }),
+                ]
+              ),
 
-            Flexible(child: Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: <Widget>[
-                // This is the left part of the controller,
-                // which takes 3/8 parts of the screen width
-                ControllerSide(
-                  () => { movement = "up" },
-                  () => { movement = "backward" },
-                  () => { movement = "left" },
-                  () => { movement = "right" }, "assets/image/left_side.png"),
+              Flexible(child: Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: <Widget>[
+                  // This is the left part of the controller,
+                  // which takes 3/8 parts of the screen width
+                  ControllerSide(
+                    () => { move("forward") },
+                    () => { move("backward") },
+                    () => { move("left") },
+                    () => { move("right") },
+                    "assets/image/left_side.png"),
 
-                // Mid part with select and start buttons
-                ControllerMid("assets/image/mid.png", () => { print("Select")}, start),
+                  // Mid part with select and start buttons
+                  ControllerMid("assets/image/mid.png", clearActions, start),
 
-                // This is the right part of the controller,
-                // which takes 3/8 parts of the screen width
-                ControllerSide(
-                  () => { action = "X" },
-                  () => { action = "B" },
-                  () => { action = "Y" },
-                  () => { action = "A" }, "assets/image/right_side.png"),
+                  // This is the right part of the controller,
+                  // which takes 3/8 parts of the screen width
+                  ControllerSide(
+                    () => { act("X") },
+                    () => { act("B") },
+                    () => { act("Y") },
+                    () => { act("A") }, "assets/image/right_side.png"),
 
-              ],
-            )),
+                ],
+              )),
 
-            Row(children: <Widget>[
-              
-            ],)
+            ]
+          ),
 
-          ]
-        )
+          Column(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: <Widget>[
+
+              Expanded(
+                flex: 8,
+                child: Row(children: <Widget>[])
+              ),
+
+              Expanded(
+                flex: 1,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: <Widget>[
+
+                    // Movement
+                    Container(
+                      decoration: new BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: (_movementFeedback == '' ? Colors.grey : Colors.greenAccent),
+                      ),
+                      child: Center(child: Text(_movementFeedback)),
+                      width: 64,
+                    ),
+
+                    Align(
+                      alignment: FractionalOffset(0, 1),
+                      child: Text(_feedback)
+                    ),
+
+                    // Action
+                    Container(
+                      decoration: new BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: (_actionFeedback == '' ? Colors.grey : Colors.greenAccent),
+                      ),
+                      child: Center(child: Text(_actionFeedback)),
+                      width: 64,
+                    )
+                  ]
+                )
+              )
+
+            ])
+        ])
       )
     );
   }
 
-  @override
-  void initState() {
-    super.initState();
-    // timer = Timer.periodic(
-    //     Duration(seconds: 3), (Timer t) => createJsonSendMqttButton());
+  void start() {
+    if (!started) {
+      publishInitialHardwareDescription();
+      started = true;
+      setState(() {
+       _feedback = 'Press buttons to move and act'; 
+      });
+    }
   }
 
-  void start() {
-    publishInitialHardwareDescription();
+  void setupTimer() {
+    if (actionTimer == null) {
+      actionTimer = new Timer(Duration(seconds: timeBeforeSend), () {
+        publishActions();
+        clearActions();
+      });
+    }
+  }
+
+  void move(String direction) {
+    setupTimer();
+    if (started) {
+        setState(() {
+        _movement = direction;
+        _movementFeedback = direction.substring(0, 1).toUpperCase();
+      });
+    }
+  }
+
+  void act(String action) {
+    setupTimer();
+    if (started) {
+      setState(() {
+        _action = action;
+        _actionFeedback = action; 
+      });
+    }
+  }
+
+  void clearActions() {
+    actionTimer?.cancel();
+    actionTimer = null;
+    setState(() {
+      _movement = 'idle';
+      _movementFeedback = '';
+      _action = 'idle';
+      _actionFeedback = '';
+    });
   }
 }
