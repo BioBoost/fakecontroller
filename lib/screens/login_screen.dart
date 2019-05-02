@@ -1,5 +1,6 @@
 import 'dart:core';
 import 'package:bug_mobile_controller/bug/mqtt_builder.dart';
+import 'package:bug_mobile_controller/screens/helpers/login_arguments.dart';
 import 'package:flutter/material.dart';
 import '../bug/user.dart';
 import '../settings/user_settings_storage.dart';
@@ -104,10 +105,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         // Create MQTT Client
                         MqttSimpleClientBuilder.create()
                         .then((client) {
-                          Navigator.pushNamed(context, '/', arguments: {
-                            client: client,
-                            user: user
-                          });
+                          Navigator.pushNamed(context, '/', arguments: LoginArguments(user, client));
                         })
                         .catchError((onError) {
                           print("Failed to connect to MQTT");

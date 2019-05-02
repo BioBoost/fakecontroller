@@ -4,6 +4,7 @@ import 'package:bug_mobile_controller/bug/addon.dart';
 import 'package:bug_mobile_controller/bug/addon_loader.dart';
 import 'package:bug_mobile_controller/bug/simple_mqtt_client.dart';
 import 'package:bug_mobile_controller/bug/user.dart';
+import 'package:bug_mobile_controller/screens/helpers/login_arguments.dart';
 import 'package:bug_mobile_controller/widgets/controller_partials/addon_dropdown.dart';
 import 'package:bug_mobile_controller/widgets/controller_partials/controller_mid.dart';
 import 'package:bug_mobile_controller/widgets/controller_partials/controller_side.dart';
@@ -16,7 +17,7 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   SimpleMqttClient _client;
-  User _user = new User("hugerthtreuiheqehqweq", "NDW");
+  User _user;
 
   List<Addon> _addons = AddonLoader.load();
 
@@ -174,6 +175,9 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
+    final LoginArguments args = ModalRoute.of(context).settings.arguments;
+    if (args?.mqttClient != null) {  _client = args.mqttClient; }
+    if (args?.user != null) {  _user = args.user; }
   //   SystemChrome.setPreferredOrientations([
   //     DeviceOrientation.landscapeLeft,
   //     DeviceOrientation.landscapeRight,
