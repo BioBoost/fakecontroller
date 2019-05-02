@@ -1,11 +1,14 @@
+import 'dart:async';
 import 'dart:core';
 import 'package:bug_mobile_controller/bug/mqtt_builder.dart';
+import 'package:bug_mobile_controller/helpers/json_user_decoder.dart';
 import 'package:bug_mobile_controller/screens/helpers/login_arguments.dart';
 import 'package:flutter/material.dart';
 import '../bug/user.dart';
 import '../settings/user_settings_storage.dart';
 import '../mqtt_settings.dart';
 import '../bug/simple_mqtt_client.dart';
+import 'package:barcode_scan/barcode_scan.dart';
 
 class LoginScreen extends StatefulWidget {
   @override
@@ -66,15 +69,28 @@ class _LoginScreenState extends State<LoginScreen> {
                   color: Colors.redAccent,
                   onPressed: () {
                     print("User pressed QR code button");
+                    scanQRCode().then((qrcode) {
+                      User user = JsonUserDecoder.decode(qrcode);
+                      if (user != null) {
+                        setState(() {
+                         _user = user; 
+                        });
+                      }
+                    }).catchError((onError) {
+                      print("Failed to scan the user from QR code");
+                      key.currentState.showSnackBar(new SnackBar(
+                        content: const Text("Could not scan QR code")
+                      ));
+                    });
                   },
                 ),
                 SizedBox(height: 35),
                 ListTile(
-                  leading: const Icon(Icons.videogame_asset),
+                  leading: const Icon(Icons.vpn_key),
                   title: TextField(
                     controller: userIdController,
                     decoration: InputDecoration(
-                      hintText: "User ID ...",
+                      hintText: "User Dongle ID ...",
                     ),
                   ),
                 ),
@@ -135,5 +151,11 @@ class _LoginScreenState extends State<LoginScreen> {
     userIdController.dispose();
     userNameController.dispose();
     super.dispose();
+  }
+
+  Future<String> scanQRCode() async {
+    String qrCode = await BarcodeScanner.scan();
+    print("Scanned QR Code: " + qrCode);
+    return qrCode;
   }
 }
