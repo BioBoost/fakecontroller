@@ -4,6 +4,7 @@ import 'package:bug_mobile_controller/bug/addon.dart';
 import 'package:bug_mobile_controller/bug/addon_loader.dart';
 import 'package:bug_mobile_controller/bug/simple_mqtt_client.dart';
 import 'package:bug_mobile_controller/bug/user.dart';
+import 'package:bug_mobile_controller/helpers/json_action_encoder.dart';
 import 'package:bug_mobile_controller/screens/helpers/login_arguments.dart';
 import 'package:bug_mobile_controller/widgets/controller_partials/addon_dropdown.dart';
 import 'package:bug_mobile_controller/widgets/controller_partials/controller_mid.dart';
@@ -27,8 +28,8 @@ class _MyHomePageState extends State<MyHomePage> {
   String displayedString = "";
   String displayedString2 = "";
   String displayedStringOld = "";
-  static const String pubTopic = 'ttn';
-  static const String pubHardwareTopic = 'hardware';
+  static const String mqttActionTopic = 'test/ttn';
+  static const String mqttHardwareTopic = 'test/hardware';
 
   Timer timer;
 
@@ -40,9 +41,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   String action = "idle";
-  final String actionIdle = "idle";
   String movement = "idle";
-  final String movementIdle = "idle";
 
   bool leftButtonState = false;
   bool rightButtonState = false;
@@ -67,24 +66,11 @@ class _MyHomePageState extends State<MyHomePage> {
   Color XButtonStateC =  Colors.red;
   Color BButtonStateC = Colors.red;
 
-  void createJsonSendMqttButton() {
-    if (_client != null && _client.isConnected()) {
-      displayedString = '{"movement":"' +
-          movement +
-          '","action":"' +
-          action +
-          '","dev_id":"' +
-          _user.getName() +
-          '"}';
-      // if (displayedString != displayedStringOld) {
-      //   displayedStringOld = displayedString;
-        _client.publish(pubTopic, displayedString);
-      // }
-      // if (startApp) {
-      //   startApp = false;
-      //   createJsonSendMqttStart();
-      // }
-    }
+  String devId = "WhatToTakeAsDevId";
+
+  void publishActions() {
+    String json = JsonActionEncoder.encode(devId, action, movement).toString();
+    _client?.publish(mqttActionTopic, json);
   }
 
   String idHardware = "0080d0803b102f01";
@@ -102,7 +88,7 @@ class _MyHomePageState extends State<MyHomePage> {
           '","dev_id":"' +
           _user.getName() +
           '"}';
-      _client.publish(pubHardwareTopic, displayedString2);
+      _client.publish(mqttHardwareTopic, displayedString2);
     }
   }
 
@@ -203,6 +189,6 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void start() {
     createJsonSendMqttStart();
-    createJsonSendMqttButton();
+    publishActions();
   }
 }
