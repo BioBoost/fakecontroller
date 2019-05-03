@@ -34,6 +34,7 @@ class _ControllerScreenState extends State<ControllerScreen> {
   String _actionFeedback = '';
   String _movementFeedback = '';
   String _feedback = 'Select addons and press start';
+  int _countdown = 0;
 
   bool started = false;
   Timer actionTimer;
@@ -136,6 +137,22 @@ class _ControllerScreenState extends State<ControllerScreen> {
 
               Expanded(
                 flex: 1,
+                child: Container(
+                  decoration: new BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: ((_countdown <= 0) ? Colors.grey : Colors.greenAccent),
+                  ),
+                  child: Center(child: Text((_countdown <= 0 ? '' : _countdown.toString()),
+                  style: TextStyle(
+                    color: Colors.red,
+                    fontWeight: FontWeight.bold
+                  ))),
+                  width: 64,
+                )
+              ),
+
+              Expanded(
+                flex: 1,
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: <Widget>[
@@ -200,9 +217,17 @@ class _ControllerScreenState extends State<ControllerScreen> {
 
   void setupTimer() {
     if (actionTimer == null) {
-      actionTimer = new Timer(Duration(seconds: timeBeforeSend), () {
-        publishActions();
-        clearActions();
+      setState(() {
+        _countdown = timeBeforeSend;
+      });
+      actionTimer = new Timer.periodic(Duration(seconds: 1), (Timer timer) {
+        setState(() {
+          _countdown--;
+        });
+        if (_countdown <= 0) {
+          publishActions();
+          clearActions();
+        }
       });
     }
   }
