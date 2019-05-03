@@ -4,6 +4,7 @@ import 'package:bug_mobile_controller/bug/mqtt_builder.dart';
 import 'package:bug_mobile_controller/helpers/json_user_decoder.dart';
 import 'package:bug_mobile_controller/screens/helpers/login_arguments.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import '../bug/user.dart';
 import '../settings/user_settings_storage.dart';
 import '../mqtt_settings.dart';
@@ -122,6 +123,11 @@ class _LoginScreenState extends State<LoginScreen> {
                         MqttSimpleClientBuilder.create()
                         .then((client) {
                           Navigator.pushNamed(context, '/', arguments: LoginArguments(user, client));
+                          // Dirty hack but needs to work
+                          SystemChrome.setPreferredOrientations([
+                              DeviceOrientation.landscapeRight,
+                              DeviceOrientation.landscapeLeft,
+                          ]);
                         })
                         .catchError((onError) {
                           print("Failed to connect to MQTT");

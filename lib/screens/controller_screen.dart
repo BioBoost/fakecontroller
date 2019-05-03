@@ -13,6 +13,7 @@ import 'package:bug_mobile_controller/widgets/controller_partials/controller_sid
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:crypto/crypto.dart';
+import 'package:flutter/services.dart';
 
 class ControllerScreen extends StatefulWidget {
   @override
@@ -43,8 +44,18 @@ class _ControllerScreenState extends State<ControllerScreen> {
   List<Addon> _selectedAddons = new List<Addon>(3);
 
   @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
   void dispose() {
-    // Clean up the controller when the Widget is disposed
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.landscapeRight,
+      DeviceOrientation.landscapeLeft,
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+    ]);
     actionTimer?.cancel();
     super.dispose();
   }
@@ -67,10 +78,6 @@ class _ControllerScreenState extends State<ControllerScreen> {
       _user = args.user;
       devId = md5.convert(utf8.encode(_user.getName()+_user.getId())).toString().substring(0, 25);
     }
-  //   SystemChrome.setPreferredOrientations([
-  //     DeviceOrientation.landscapeLeft,
-  //     DeviceOrientation.landscapeRight,
-  //   ]);
     return Scaffold(
       body: Padding(
         padding: const EdgeInsets.all(32),
