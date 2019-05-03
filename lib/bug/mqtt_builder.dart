@@ -8,8 +8,8 @@ class MqttSimpleClientBuilder {
     return MqttSettingsStorage.load()
     .then((settings) {
       print("Settings loaded succesfully: " + settings.toString());
-      settings.broker = "api.bug.labict.be/broker";
-      settings.useWebSockets = true;
+      // settings.broker = "api.bug.labict.be/broker";
+      // settings.useWebSockets = true;
       return new SimpleMqttClient(settings);
     })
     .catchError((onError) {
