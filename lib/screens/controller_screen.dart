@@ -267,6 +267,7 @@ class _ControllerScreenState extends State<ControllerScreen> {
       _movementFeedback = '';
       _action = 'idle';
       _actionFeedback = '';
+      _countdown = 0;
     });
   }
 }
