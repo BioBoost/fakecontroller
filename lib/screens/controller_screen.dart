@@ -76,7 +76,8 @@ class _ControllerScreenState extends State<ControllerScreen> {
     if (args?.mqttClient != null) {  _client = args.mqttClient; }
     if (args?.user != null) { 
       _user = args.user;
-      devId = md5.convert(utf8.encode(_user.getName()+_user.getId())).toString().substring(0, 25);
+      devId = "fake." + _user.getName() + "."
+        + md5.convert(utf8.encode(_user.getName()+_user.getId())).toString().substring(0, 5);
     }
     return Scaffold(
       body: Padding(
