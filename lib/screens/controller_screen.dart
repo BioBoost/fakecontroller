@@ -174,14 +174,28 @@ class _ControllerScreenState extends State<ControllerScreen> {
     );
   }
 
-  void start() {
-    if (!started) {
-      publishInitialHardwareDescription();
-      started = true;
+  bool checkMqtt() {
+    if (_client == null || !_client.isConnected()) {
       setState(() {
-       _feedback = 'Press buttons to move and act'; 
+        _feedback = "Not connected to MQTT. Please check settings.";
       });
+      new Timer(Duration(seconds: 2), () => {
+        Navigator.pushNamed(context, '/config')
+      });
+      return false;
     }
+    return true;
+  }
+
+  void start() {
+    if (!checkMqtt()) {
+      return;
+    }
+    publishInitialHardwareDescription();
+    setState(() {
+      _feedback = 'Ready! Press buttons to move and act';
+      started = true;
+    });
   }
 
   void setupTimer() {

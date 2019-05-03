@@ -137,6 +137,14 @@ class _LoginScreenState extends State<LoginScreen> {
                     }
                   },
                 ),
+                RaisedButton(
+                  child: Text('Preferences'),
+                  textColor: Colors.white,
+                  color: Colors.grey,
+                  onPressed: () {
+                    Navigator.pushNamed(context, '/config');
+                  },
+                ),
               ],
             )
           )
